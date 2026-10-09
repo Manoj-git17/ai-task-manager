@@ -1,10 +1,8 @@
-import { FaSearch, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 
 function SearchBar({ search, setSearch }) {
   return (
     <div className="search-container">
-      <FaSearch className="search-icon" aria-hidden="true" />
-
       <input
         className="search-input"
         type="text"
@@ -17,6 +15,7 @@ function SearchBar({ search, setSearch }) {
 
       {search && (
         <button
+          type="button"
           className="search-clear"
           onClick={() => setSearch("")}
           aria-label="Clear search"

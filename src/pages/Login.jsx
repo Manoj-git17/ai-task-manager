@@ -1,20 +1,43 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaLock, FaEnvelope } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  FaLock,
+  FaEnvelope,
+  FaEye,
+  FaEyeSlash,
+  FaArrowRight,
+  FaTasks,
+} from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const API_URL = (
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:5000/api"
+  ).replace(/\/+$/, "");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      setError("Please fill in all fields.");
+    if (loading) return;
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
+      setError("Please enter your email and password.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -22,36 +45,55 @@ function Login() {
       setLoading(true);
       setError("");
 
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:3000";
-
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
+          email: cleanEmail,
           password,
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(data.message || "Login failed");
+        if (response.status === 401) {
+          setError("Incorrect email or password. Please try again.");
+        } else if (response.status === 429) {
+          setError("Too many attempts. Please try again later.");
+        } else if (response.status >= 500) {
+          setError(
+            data.message ||
+              "The server is temporarily unavailable. Please try again."
+          );
+        } else {
+          setError(data.message || "Unable to log in. Please try again.");
+        }
+
         return;
       }
 
-      // Save login information
+      if (!data.token || !data.user) {
+        setError("Invalid response from server. Please try again.");
+        return;
+      }
+
+      // Save authentication information.
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Navigate to dashboard
-      navigate("/");
-    } catch (error) {
-      console.error(error);
-      setError("Unable to connect to server.");
+      // Return to the originally requested page, if available.
+      const destination = location.state?.from?.pathname || "/";
+
+      navigate(destination, { replace: true });
+    } catch (err) {
+      console.error("Login error:", err);
+
+      setError(
+        "Unable to connect to the server. Please check your connection and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -60,17 +102,29 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
+        {/* Header */}
         <div className="login-header">
-          <h1>🔐 Login</h1>
-          <p>Welcome back! Please login to continue.</p>
+          <div className="login-brand-icon" aria-hidden="true">
+            <FaTasks />
+          </div>
+
+          <h1>Welcome Back!</h1>
+
+          <p>Log in to your TaskFlow workspace.</p>
         </div>
 
-        {error && <p className="form-error">{error}</p>}
+        {/* Error Message */}
+        {error && (
+          <div className="form-error" role="alert" aria-live="polite">
+            {error}
+          </div>
+        )}
 
+        {/* Login Form */}
         <form className="login-form" onSubmit={handleSubmit}>
           {/* Email */}
           <div className="form-field">
-            <label htmlFor="login-email">Email</label>
+            <label htmlFor="login-email">Email Address</label>
 
             <div className="login-input-wrap">
               <FaEnvelope
@@ -80,13 +134,18 @@ function Login() {
 
               <input
                 id="login-email"
+                name="email"
                 type="email"
-                placeholder="Enter Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setError("");
                 }}
+                autoComplete="email"
+                required
+                maxLength={254}
+                disabled={loading}
               />
             </div>
           </div>
@@ -103,40 +162,68 @@ function Login() {
 
               <input
                 id="login-password"
-                type="password"
-                placeholder="Enter Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setError("");
                 }}
+                autoComplete="current-password"
+                required
+                disabled={loading}
               />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((previous) => !previous)}
+                aria-label={
+                  showPassword ? "Hide password" : "Show password"
+                }
+                title={showPassword ? "Hide password" : "Show password"}
+                disabled={loading}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
           {/* Login Button */}
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-primary login-submit"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <>
+                <span className="login-spinner" aria-hidden="true" />
+                Logging in...
+              </>
+            ) : (
+              <>
+                Login to TaskFlow
+                <FaArrowRight aria-hidden="true" />
+              </>
+            )}
           </button>
         </form>
 
         {/* Register Link */}
-        <p style={{ textAlign: "center", marginTop: "20px" }}>
+        <p className="login-register-link">
           Don't have an account?{" "}
-          <span
+          <button
+            type="button"
             onClick={() => navigate("/register")}
-            style={{
-              color: "#007bff",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
+            disabled={loading}
           >
             Create Account
-          </span>
+          </button>
+        </p>
+
+        <p className="login-footer">
+          Your productivity journey starts here.
         </p>
       </div>
     </div>

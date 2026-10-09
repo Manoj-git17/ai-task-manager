@@ -1,22 +1,21 @@
 import { useState } from "react";
 
-function AddTask({ tasks, getTasks }) {
+function AddTask({ tasks = [], getTasks }) {
   const [task, setTask] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [dueDate, setDueDate] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const API_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API_URL = (
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:5000/api"
+  ).replace(/\/+$/, "");
 
   function showMessage(text) {
     setMessage(text);
     setError("");
-
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
   }
 
   function showError(text) {
@@ -25,97 +24,126 @@ function AddTask({ tasks, getTasks }) {
   }
 
   async function addTask() {
-    if (task.trim() === "") {
-      showError("⚠️ Please enter a task.");
+    const trimmedTask = task.trim();
+
+    if (!trimmedTask) {
+      showError("Please enter a task.");
       return;
     }
 
     const taskExists = tasks.some(
       (item) =>
-        item.task.toLowerCase().trim() ===
-        task.toLowerCase().trim()
+        item.task?.toLowerCase().trim() ===
+        trimmedTask.toLowerCase()
     );
 
     if (taskExists) {
-      showError("⚠️ Task already exists!");
+      showError("This task already exists!");
       return;
     }
 
-    // GET TOKEN
     const token = localStorage.getItem("token");
 
     if (!token) {
-      showError("❌ Please login again.");
+      showError("Your session has expired. Please log in again.");
       return;
     }
+
+    if (submitting) return;
+
+    setSubmitting(true);
+    setError("");
+    setMessage("");
 
     try {
       const response = await fetch(`${API_URL}/tasks`, {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-
         body: JSON.stringify({
-          task,
+          task: trimmedTask,
           priority,
           dueDate: dueDate || null,
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-      if (response.ok) {
-        showMessage("✅ Task added successfully!");
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        showError("Your session has expired. Please log in again.");
+        return;
+      }
 
-        await getTasks();
-
-        setTask("");
-        setPriority("Medium");
-        setDueDate("");
-      } else {
-        showError(
-          data.message || "❌ Failed to add task."
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            data.error ||
+            `Could not add task (HTTP ${response.status}).`
         );
       }
-    } catch (error) {
-      console.log(error);
 
-      showError("❌ Server Error");
+      showMessage("Task added successfully!");
+
+      setTask("");
+      setPriority("Medium");
+      setDueDate("");
+
+      if (typeof getTasks === "function") {
+        await getTasks();
+      }
+    } catch (err) {
+      console.error("Add task failed:", err);
+
+      if (err instanceof TypeError) {
+        showError(
+          `Cannot connect to the backend at ${API_URL}. Check that your backend is running.`
+        );
+      } else {
+        showError(err.message || "Unable to add task.");
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 
   return (
     <div className="add-task-form">
       {message && (
-        <p className="form-success">
-          {message}
+        <p className="form-success" role="status">
+          ✅ {message}
         </p>
       )}
 
       {error && (
-        <p className="form-error">
-          {error}
+        <p className="form-error" role="alert">
+          ❌ {error}
         </p>
       )}
 
       <div className="form-row">
         <div className="form-field">
-          <label>Task Title</label>
+          <label htmlFor="task-title">Task Title</label>
 
           <input
+            id="task-title"
             className="task-input"
             type="text"
             placeholder="Enter your task..."
             value={task}
-            onChange={(e) => {
-              setTask(e.target.value);
+            maxLength={200}
+            disabled={submitting}
+            onChange={(event) => {
+              setTask(event.target.value);
               setError("");
+              setMessage("");
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
                 addTask();
               }
             }}
@@ -123,14 +151,14 @@ function AddTask({ tasks, getTasks }) {
         </div>
 
         <div className="form-field">
-          <label>Priority</label>
+          <label htmlFor="task-priority">Priority</label>
 
           <select
+            id="task-priority"
             className="priority-select"
             value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value)
-            }
+            disabled={submitting}
+            onChange={(event) => setPriority(event.target.value)}
           >
             <option value="High">🔴 High</option>
             <option value="Medium">🟡 Medium</option>
@@ -139,29 +167,28 @@ function AddTask({ tasks, getTasks }) {
         </div>
 
         <div className="form-field">
-          <label>Due Date</label>
+          <label htmlFor="task-due-date">Due Date</label>
 
           <input
+            id="task-due-date"
             className="date-input"
             type="date"
             value={dueDate}
-            onChange={(e) =>
-              setDueDate(e.target.value)
-            }
+            disabled={submitting}
+            onChange={(event) => setDueDate(event.target.value)}
           />
         </div>
 
-        <div
-          className="form-field"
-          style={{ flex: "0 0 auto" }}
-        >
-          <label>&nbsp;</label>
+        <div className="form-field add-task-button-field">
+          <label aria-hidden="true">&nbsp;</label>
 
           <button
+            type="button"
             className="btn btn-primary"
             onClick={addTask}
+            disabled={submitting}
           >
-            ➕ Add Task
+            {submitting ? "Adding..." : "➕ Add Task"}
           </button>
         </div>
       </div>
