@@ -5633,3 +5633,56 @@ input[type="radio"] {
     transition-duration: 0.01ms !important;
   }
 }
+/* Professional registration link */
+.login-register-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.login-register-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #5145e5;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.login-register-button:hover {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+}
+
+.login-register-button:hover > span {
+  transform: translateX(3px);
+}
+
+.login-register-button > span {
+  transition: transform 0.2s ease;
+}
+
+.login-register-button:focus-visible {
+  outline: 2px solid #6555f5;
+  outline-offset: 3px;
+}
+
+.login-register-button:active {
+  transform: scale(0.98);
+}

@@ -20,8 +20,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const API_URL = (
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api"
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
   ).replace(/\/+$/, "");
 
   async function handleSubmit(e) {
@@ -80,11 +79,9 @@ function Login() {
         return;
       }
 
-      // Save authentication information.
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Return to the originally requested page, if available.
       const destination = location.state?.from?.pathname || "/";
 
       navigate(destination, { replace: true });
@@ -102,27 +99,22 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Header */}
         <div className="login-header">
           <div className="login-brand-icon" aria-hidden="true">
             <FaTasks />
           </div>
 
           <h1>Welcome Back!</h1>
-
           <p>Log in to your TaskFlow workspace.</p>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="form-error" role="alert" aria-live="polite">
             {error}
           </div>
         )}
 
-        {/* Login Form */}
         <form className="login-form" onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="form-field">
             <label htmlFor="login-email">Email Address</label>
 
@@ -150,7 +142,6 @@ function Login() {
             </div>
           </div>
 
-          {/* Password */}
           <div className="form-field">
             <label htmlFor="login-password">Password</label>
 
@@ -178,10 +169,10 @@ function Login() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setShowPassword((previous) => !previous)}
-                aria-label={
-                  showPassword ? "Hide password" : "Show password"
+                onClick={() =>
+                  setShowPassword((previous) => !previous)
                 }
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 title={showPassword ? "Hide password" : "Show password"}
                 disabled={loading}
               >
@@ -190,7 +181,6 @@ function Login() {
             </div>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="btn btn-primary login-submit"
@@ -210,17 +200,17 @@ function Login() {
           </button>
         </form>
 
-        {/* Register Link */}
-        <p className="login-register-link">
-          Don't have an account?{" "}
+        <div className="login-register-prompt">
+          <span>Don't have an account?</span>
+
           <button
             type="button"
+            className="login-register-button"
             onClick={() => navigate("/register")}
-            disabled={loading}
           >
-            Create Account
+            Create account <span aria-hidden="true">→</span>
           </button>
-        </p>
+        </div>
 
         <p className="login-footer">
           Your productivity journey starts here.
