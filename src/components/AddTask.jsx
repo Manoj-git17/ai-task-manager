@@ -7,6 +7,9 @@ function AddTask({ tasks, getTasks }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   function showMessage(text) {
     setMessage(text);
     setError("");
@@ -47,23 +50,20 @@ function AddTask({ tasks, getTasks }) {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/tasks",
-        {
-          method: "POST",
+      const response = await fetch(`${API_URL}/tasks`, {
+        method: "POST",
 
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
 
-          body: JSON.stringify({
-            task,
-            priority,
-            dueDate: dueDate || null,
-          }),
-        }
-      );
+        body: JSON.stringify({
+          task,
+          priority,
+          dueDate: dueDate || null,
+        }),
+      });
 
       const data = await response.json();
 
@@ -75,13 +75,11 @@ function AddTask({ tasks, getTasks }) {
         setTask("");
         setPriority("Medium");
         setDueDate("");
-
       } else {
         showError(
           data.message || "❌ Failed to add task."
         );
       }
-
     } catch (error) {
       console.log(error);
 
@@ -91,7 +89,6 @@ function AddTask({ tasks, getTasks }) {
 
   return (
     <div className="add-task-form">
-
       {message && (
         <p className="form-success">
           {message}
@@ -105,7 +102,6 @@ function AddTask({ tasks, getTasks }) {
       )}
 
       <div className="form-row">
-
         <div className="form-field">
           <label>Task Title</label>
 
@@ -126,7 +122,6 @@ function AddTask({ tasks, getTasks }) {
           />
         </div>
 
-
         <div className="form-field">
           <label>Priority</label>
 
@@ -137,20 +132,11 @@ function AddTask({ tasks, getTasks }) {
               setPriority(e.target.value)
             }
           >
-            <option value="High">
-              🔴 High
-            </option>
-
-            <option value="Medium">
-              🟡 Medium
-            </option>
-
-            <option value="Low">
-              🟢 Low
-            </option>
+            <option value="High">🔴 High</option>
+            <option value="Medium">🟡 Medium</option>
+            <option value="Low">🟢 Low</option>
           </select>
         </div>
-
 
         <div className="form-field">
           <label>Due Date</label>
@@ -165,7 +151,6 @@ function AddTask({ tasks, getTasks }) {
           />
         </div>
 
-
         <div
           className="form-field"
           style={{ flex: "0 0 auto" }}
@@ -179,7 +164,6 @@ function AddTask({ tasks, getTasks }) {
             ➕ Add Task
           </button>
         </div>
-
       </div>
     </div>
   );

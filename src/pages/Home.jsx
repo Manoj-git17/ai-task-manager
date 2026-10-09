@@ -14,6 +14,13 @@ import ProgressBar from "../components/ProgressBar";
 
 function Home({ darkMode, setDarkMode }) {
   // =========================
+  // API URL
+  // =========================
+
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+  // =========================
   // STATES
   // =========================
 
@@ -50,14 +57,11 @@ function Home({ darkMode, setDarkMode }) {
         return;
       }
 
-      const response = await fetch(
-        "http://localhost:3000/tasks",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/tasks`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch tasks");
@@ -77,7 +81,7 @@ function Home({ darkMode, setDarkMode }) {
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
-  }, []);
+  }, [API_URL]);
 
   // =========================
   // LOAD TASKS
@@ -127,7 +131,7 @@ function Home({ darkMode, setDarkMode }) {
   async function deleteTask(id) {
     try {
       const response = await fetch(
-        `http://localhost:3000/tasks/${id}`,
+        `${API_URL}/tasks/${id}`,
         {
           method: "DELETE",
           headers: getAuthHeaders(),
@@ -137,10 +141,7 @@ function Home({ darkMode, setDarkMode }) {
       if (!response.ok) {
         const data = await response.json();
 
-        alert(
-          data.message || "Failed to delete task"
-        );
-
+        alert(data.message || "Failed to delete task");
         return;
       }
 
@@ -164,12 +165,10 @@ function Home({ darkMode, setDarkMode }) {
       if (!selectedTask) return;
 
       const response = await fetch(
-        `http://localhost:3000/tasks/${id}`,
+        `${API_URL}/tasks/${id}`,
         {
           method: "PUT",
-
           headers: getAuthHeaders(),
-
           body: JSON.stringify({
             task: selectedTask.task,
 
@@ -178,14 +177,11 @@ function Home({ darkMode, setDarkMode }) {
                 ? 0
                 : 1,
 
-            favorite:
-              Number(selectedTask.favorite),
+            favorite: Number(selectedTask.favorite),
 
-            priority:
-              selectedTask.priority || "Medium",
+            priority: selectedTask.priority || "Medium",
 
-            dueDate:
-              selectedTask.dueDate || null,
+            dueDate: selectedTask.dueDate || null,
           }),
         }
       );
@@ -193,20 +189,13 @@ function Home({ darkMode, setDarkMode }) {
       if (!response.ok) {
         const data = await response.json();
 
-        alert(
-          data.message || "Failed to update task"
-        );
-
+        alert(data.message || "Failed to update task");
         return;
       }
 
       await getTasks();
     } catch (error) {
-      console.log(
-        "Toggle complete error:",
-        error
-      );
-
+      console.log("Toggle complete error:", error);
       alert("Server error while updating task");
     }
   }
@@ -224,28 +213,23 @@ function Home({ darkMode, setDarkMode }) {
       if (!selectedTask) return;
 
       const response = await fetch(
-        `http://localhost:3000/tasks/${id}`,
+        `${API_URL}/tasks/${id}`,
         {
           method: "PUT",
-
           headers: getAuthHeaders(),
-
           body: JSON.stringify({
             task: selectedTask.task,
 
-            completed:
-              Number(selectedTask.completed),
+            completed: Number(selectedTask.completed),
 
             favorite:
               Number(selectedTask.favorite) === 1
                 ? 0
                 : 1,
 
-            priority:
-              selectedTask.priority || "Medium",
+            priority: selectedTask.priority || "Medium",
 
-            dueDate:
-              selectedTask.dueDate || null,
+            dueDate: selectedTask.dueDate || null,
           }),
         }
       );
@@ -253,17 +237,13 @@ function Home({ darkMode, setDarkMode }) {
       if (!response.ok) {
         const data = await response.json();
 
-        alert(
-          data.message || "Failed to update favorite"
-        );
-
+        alert(data.message || "Failed to update favorite");
         return;
       }
 
       await getTasks();
     } catch (error) {
       console.log("Favorite error:", error);
-
       alert("Server error while updating favorite");
     }
   }
@@ -274,7 +254,6 @@ function Home({ darkMode, setDarkMode }) {
 
   return (
     <div className="app-main">
-
       {/* HERO */}
 
       <div className="hero">
@@ -299,26 +278,19 @@ function Home({ darkMode, setDarkMode }) {
 
       <button
         className="btn btn-secondary theme-btn"
-        onClick={() =>
-          setDarkMode(!darkMode)
-        }
+        onClick={() => setDarkMode(!darkMode)}
         aria-label={
           darkMode
             ? "Switch to light mode"
             : "Switch to dark mode"
         }
       >
-        {darkMode
-          ? "☀️ Light Mode"
-          : "🌙 Dark Mode"}
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
 
       {/* DASHBOARD STATISTICS */}
 
       <div className="dashboard-stats">
-
-        {/* TOTAL */}
-
         <div className="stat-card">
           <div className="stat-icon total">
             <FaTasks />
@@ -329,8 +301,6 @@ function Home({ darkMode, setDarkMode }) {
             <p>Total Tasks</p>
           </div>
         </div>
-
-        {/* COMPLETED */}
 
         <div className="stat-card">
           <div className="stat-icon completed">
@@ -343,8 +313,6 @@ function Home({ darkMode, setDarkMode }) {
           </div>
         </div>
 
-        {/* ACTIVE */}
-
         <div className="stat-card">
           <div className="stat-icon active">
             <FaClock />
@@ -356,8 +324,6 @@ function Home({ darkMode, setDarkMode }) {
           </div>
         </div>
 
-        {/* OVERDUE */}
-
         <div className="stat-card">
           <div className="stat-icon overdue">
             <FaExclamationTriangle />
@@ -368,7 +334,6 @@ function Home({ darkMode, setDarkMode }) {
             <p>Overdue</p>
           </div>
         </div>
-
       </div>
 
       {/* ADD TASK */}
@@ -416,25 +381,19 @@ function Home({ darkMode, setDarkMode }) {
         <TaskList
           tasks={tasks}
           getTasks={getTasks}
-
           search={search}
           setSearch={setSearch}
-
           filter={filter}
           setFilter={setFilter}
-
           priorityFilter={priorityFilter}
           setPriorityFilter={setPriorityFilter}
-
           sortBy={sortBy}
           setSortBy={setSortBy}
-
           deleteTask={deleteTask}
           toggleTask={toggleTask}
           toggleFavorite={toggleFavorite}
         />
       </div>
-
     </div>
   );
 }

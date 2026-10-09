@@ -9,6 +9,9 @@ function TaskList({ tasks = [], getTasks }) {
   const [editPriority, setEditPriority] = useState("Medium");
   const [editDueDate, setEditDueDate] = useState("");
 
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   // Get JWT Token
   const token = localStorage.getItem("token");
 
@@ -17,29 +20,23 @@ function TaskList({ tasks = [], getTasks }) {
     Authorization: `Bearer ${token}`,
   };
 
-  // =========================
   // OPEN DELETE MODAL
-  // =========================
   function openDeleteModal(taskItem) {
     setTaskToDelete(taskItem);
   }
 
-  // =========================
   // CLOSE DELETE MODAL
-  // =========================
   function closeDeleteModal() {
     setTaskToDelete(null);
   }
 
-  // =========================
   // DELETE TASK
-  // =========================
   async function deleteTask() {
     if (!taskToDelete) return;
 
     try {
       const response = await fetch(
-        `http://localhost:3000/tasks/${taskToDelete.id}`,
+        `${API_URL}/tasks/${taskToDelete.id}`,
         {
           method: "DELETE",
           headers,
@@ -50,9 +47,7 @@ function TaskList({ tasks = [], getTasks }) {
 
       if (response.ok) {
         toast.success("Task deleted successfully! 🗑️");
-
         setTaskToDelete(null);
-
         await getTasks();
       } else {
         toast.error(data.message || "Failed to delete task");
@@ -63,20 +58,15 @@ function TaskList({ tasks = [], getTasks }) {
     }
   }
 
-  // =========================
   // START EDITING
-  // =========================
   function startEditing(taskItem) {
     setEditingId(taskItem.id);
-
     setEditTask(taskItem.task || "");
     setEditPriority(taskItem.priority || "Medium");
     setEditDueDate(taskItem.dueDate || "");
   }
 
-  // =========================
   // CANCEL EDITING
-  // =========================
   function cancelEditing() {
     setEditingId(null);
     setEditTask("");
@@ -84,9 +74,7 @@ function TaskList({ tasks = [], getTasks }) {
     setEditDueDate("");
   }
 
-  // =========================
   // SAVE TASK
-  // =========================
   async function saveTask(taskItem) {
     if (!editTask.trim()) {
       toast.warning("Please enter a task!");
@@ -95,11 +83,10 @@ function TaskList({ tasks = [], getTasks }) {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/tasks/${taskItem.id}`,
+        `${API_URL}/tasks/${taskItem.id}`,
         {
           method: "PUT",
           headers,
-
           body: JSON.stringify({
             task: editTask.trim(),
             completed: taskItem.completed ? 1 : 0,
@@ -114,9 +101,7 @@ function TaskList({ tasks = [], getTasks }) {
 
       if (response.ok) {
         toast.success("Task updated successfully! ✏️");
-
         setEditingId(null);
-
         await getTasks();
       } else {
         toast.error(data.message || "Failed to update task");
@@ -127,17 +112,14 @@ function TaskList({ tasks = [], getTasks }) {
     }
   }
 
-  // =========================
   // TOGGLE COMPLETED
-  // =========================
   async function toggleCompleted(taskItem) {
     try {
       const response = await fetch(
-        `http://localhost:3000/tasks/${taskItem.id}`,
+        `${API_URL}/tasks/${taskItem.id}`,
         {
           method: "PUT",
           headers,
-
           body: JSON.stringify({
             task: taskItem.task,
             completed: taskItem.completed ? 0 : 1,
@@ -167,17 +149,14 @@ function TaskList({ tasks = [], getTasks }) {
     }
   }
 
-  // =========================
   // TOGGLE FAVORITE
-  // =========================
   async function toggleFavorite(taskItem) {
     try {
       const response = await fetch(
-        `http://localhost:3000/tasks/${taskItem.id}`,
+        `${API_URL}/tasks/${taskItem.id}`,
         {
           method: "PUT",
           headers,
-
           body: JSON.stringify({
             task: taskItem.task,
             completed: taskItem.completed ? 1 : 0,
@@ -207,9 +186,7 @@ function TaskList({ tasks = [], getTasks }) {
     }
   }
 
-  // =========================
   // PRIORITY CLASS
-  // =========================
   function getPriorityClass(priority) {
     if (priority === "High") return "high";
     if (priority === "Low") return "low";
@@ -223,9 +200,7 @@ function TaskList({ tasks = [], getTasks }) {
         {tasks.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">📋</div>
-
             <h3>No tasks found</h3>
-
             <p>Add a new task to get started!</p>
           </div>
         ) : (
@@ -236,27 +211,24 @@ function TaskList({ tasks = [], getTasks }) {
               }`}
               key={taskItem.id}
             >
-              {/* ================= EDIT MODE ================= */}
-
+              {/* EDIT MODE */}
               {editingId === taskItem.id ? (
                 <div className="edit-form">
                   <div className="edit-form-row">
-                    {/* TASK */}
                     <div className="form-field">
                       <label>Task</label>
-
                       <input
                         className="edit-input"
                         type="text"
                         value={editTask}
-                        onChange={(e) => setEditTask(e.target.value)}
+                        onChange={(e) =>
+                          setEditTask(e.target.value)
+                        }
                       />
                     </div>
 
-                    {/* PRIORITY */}
                     <div className="form-field">
                       <label>Priority</label>
-
                       <select
                         className="edit-select"
                         value={editPriority}
@@ -270,10 +242,8 @@ function TaskList({ tasks = [], getTasks }) {
                       </select>
                     </div>
 
-                    {/* DUE DATE */}
                     <div className="form-field">
                       <label>Due Date</label>
-
                       <input
                         className="edit-date"
                         type="date"
@@ -285,7 +255,6 @@ function TaskList({ tasks = [], getTasks }) {
                     </div>
                   </div>
 
-                  {/* EDIT BUTTONS */}
                   <div className="edit-actions">
                     <button
                       className="btn btn-primary btn-sm"
@@ -319,7 +288,6 @@ function TaskList({ tasks = [], getTasks }) {
                     </h3>
 
                     <div className="task-meta">
-                      {/* PRIORITY */}
                       <span
                         className={`priority-badge ${getPriorityClass(
                           taskItem.priority
@@ -328,11 +296,9 @@ function TaskList({ tasks = [], getTasks }) {
                         {taskItem.priority === "High" && "🔴 "}
                         {taskItem.priority === "Medium" && "🟡 "}
                         {taskItem.priority === "Low" && "🟢 "}
-
                         {taskItem.priority || "Medium"}
                       </span>
 
-                      {/* DUE DATE */}
                       <span className="due-date">
                         📅{" "}
                         {taskItem.dueDate
@@ -344,37 +310,26 @@ function TaskList({ tasks = [], getTasks }) {
 
                   {/* ACTIONS */}
                   <div className="task-actions">
-                    {/* FAVORITE */}
                     <button
                       className={`favorite-btn ${
-                        taskItem.favorite
-                          ? "is-favorite"
-                          : ""
+                        taskItem.favorite ? "is-favorite" : ""
                       }`}
-                      onClick={() =>
-                        toggleFavorite(taskItem)
-                      }
+                      onClick={() => toggleFavorite(taskItem)}
                       title="Favorite"
                     >
                       {taskItem.favorite ? "★" : "☆"}
                     </button>
 
-                    {/* EDIT */}
                     <button
                       className="btn btn-secondary btn-sm"
-                      onClick={() =>
-                        startEditing(taskItem)
-                      }
+                      onClick={() => startEditing(taskItem)}
                     >
                       ✏️ Edit
                     </button>
 
-                    {/* DELETE */}
                     <button
                       className="btn btn-danger btn-sm"
-                      onClick={() =>
-                        openDeleteModal(taskItem)
-                      }
+                      onClick={() => openDeleteModal(taskItem)}
                     >
                       🗑 Delete
                     </button>
@@ -386,14 +341,11 @@ function TaskList({ tasks = [], getTasks }) {
         )}
       </div>
 
-      {/* ================= DELETE MODAL ================= */}
-
+      {/* DELETE MODAL */}
       {taskToDelete && (
         <div className="delete-modal-overlay">
           <div className="delete-modal">
-            <div className="delete-modal-icon">
-              🗑️
-            </div>
+            <div className="delete-modal-icon">🗑️</div>
 
             <h2>Delete Task?</h2>
 
