@@ -22,7 +22,6 @@ function Login() {
       setLoading(true);
       setError("");
 
-      // Use the deployed backend URL when available
       const API_URL =
         import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -48,10 +47,10 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Go to dashboard
+      // Navigate to dashboard
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setError("Unable to connect to server.");
     } finally {
       setLoading(false);
@@ -69,6 +68,7 @@ function Login() {
         {error && <p className="form-error">{error}</p>}
 
         <form className="login-form" onSubmit={handleSubmit}>
+          {/* Email */}
           <div className="form-field">
             <label htmlFor="login-email">Email</label>
 
@@ -91,6 +91,7 @@ function Login() {
             </div>
           </div>
 
+          {/* Password */}
           <div className="form-field">
             <label htmlFor="login-password">Password</label>
 
@@ -113,6 +114,7 @@ function Login() {
             </div>
           </div>
 
+          {/* Login Button */}
           <button
             type="submit"
             className="btn btn-primary"
@@ -121,6 +123,21 @@ function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        {/* Register Link */}
+        <p style={{ textAlign: "center", marginTop: "20px" }}>
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            style={{
+              color: "#007bff",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Create Account
+          </span>
+        </p>
       </div>
     </div>
   );
