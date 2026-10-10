@@ -303,16 +303,18 @@ function Register() {
           </button>
         </form>
 
-        <p className="login-register-link">
-          Already have an account?{" "}
+        <div className="login-register-prompt">
+          <span>Already have an account?</span>
+
           <button
             type="button"
+            className="login-register-button"
             onClick={() => navigate("/login")}
             disabled={loading}
           >
-            Login
+            Login <span aria-hidden="true">→</span>
           </button>
-        </p>
+        </div>
 
         <p className="login-footer">
           Plan smarter. Achieve more.
