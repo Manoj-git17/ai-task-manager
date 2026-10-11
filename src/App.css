@@ -5686,3 +5686,187 @@ input[type="radio"] {
 .login-register-button:active {
   transform: scale(0.98);
 }
+/* ==========================================
+   TASKFLOW — MOBILE RESPONSIVENESS FIX
+   ========================================== */
+
+@media (max-width: 600px) {
+  /* Prevent unwanted horizontal scrolling */
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .workspace {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  /* Main dashboard */
+  .workspace-main {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  .workspace-content {
+    width: 100%;
+    min-width: 0;
+    padding: 16px 12px;
+  }
+
+  /* Dashboard header */
+  .workspace-topbar {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .workspace-topbar h2 {
+    font-size: 18px;
+  }
+
+  /* Statistics cards */
+  .workspace-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .workspace-stat-card {
+    min-width: 0;
+    padding: 14px;
+  }
+
+  /* Dashboard panels */
+  .workspace-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 16px 12px;
+    margin-bottom: 16px;
+  }
+
+  /* Create Task form */
+  .workspace-add-panel .add-task-form,
+  .workspace-add-panel .form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    gap: 14px;
+  }
+
+  .workspace-add-panel .form-field {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .workspace-add-panel .task-input,
+  .workspace-add-panel .priority-select,
+  .workspace-add-panel .date-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Add Task button */
+  .workspace-add-panel button {
+    max-width: 100%;
+  }
+
+  /* Task cards */
+  .workspace .task-item {
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .workspace .task-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .workspace .task-title {
+    overflow-wrap: anywhere;
+  }
+
+  /* Edit, favorite and delete actions */
+  .workspace .task-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .workspace .task-actions button {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* Search field */
+  .workspace-search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .workspace-search .search-container {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .workspace-search .search-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Progress section */
+  .workspace-progress-panel,
+  .workspace-progress-panel .progress-container {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Footer */
+  .workspace-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .workspace-content {
+    padding: 12px 8px;
+  }
+
+  .workspace-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-panel {
+    padding: 14px 10px;
+  }
+
+  .workspace .task-actions button {
+    flex: 1 1 auto;
+  }
+}
