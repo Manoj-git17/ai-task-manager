@@ -1,85 +1,250 @@
-/* ============================================
-   Design System - Global Styles
-   ============================================ */
+/* ==========================================================================
+   TASKFLOW DESIGN SYSTEM — APPLE-INSPIRED ADAPTIVE DESIGN TOKENS
+   Refined typography, translucent surfaces, squircle geometry & fluid motion.
+   Preserves 100% backward compatibility with all legacy variable references.
+   ========================================================================== */
 
 :root {
-  /* Primary Colors */
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #eef2ff;
-  --primary-soft: #e0e7ff;
+  /* ------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------ */
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "SF Pro", "Inter", -apple-system-body, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  /* Neutral Colors */
-  --bg: #f8fafc;
+  --font-size-xs: 12px;
+  --font-size-sm: 13.5px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 36px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: -0.022em;
+  --letter-spacing-normal: -0.011em;
+  --letter-spacing-wide: 0.02em;
+
+  /* ------------------------------------------------------------------------
+     Light Theme Palette (Apple System Neutral & Dynamic Accents)
+     ------------------------------------------------------------------------ */
+  --primary: #0071e3;
+  --primary-hover: #0077ed;
+  --primary-active: #005bb5;
+  --primary-light: rgba(0, 113, 227, 0.08);
+  --primary-soft: rgba(0, 113, 227, 0.14);
+
+  --bg: #f5f5f7;
   --surface: #ffffff;
-  --surface-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
+  --surface-hover: #f0f0f4;
+  --surface-active: #e8e8ed;
+  --card-bg: #ffffff;
 
-  /* Text Colors */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-subtle: rgba(0, 0, 0, 0.04);
 
-  /* Semantic Colors */
-  --success: #16a34a;
-  --success-bg: #dcfce7;
-  --warning: #d97706;
-  --warning-bg: #fef3c7;
-  --danger: #dc2626;
-  --danger-bg: #fee2e2;
-  --info: #2563eb;
-  --info-bg: #dbeafe;
+  --text-primary: #1d1d1f;
+  --text-color: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
+  --text-tertiary: #a1a1a6;
 
-  /* Dark Mode Colors */
-  --dark-bg: #0f172a;
-  --dark-surface: #1e293b;
-  --dark-surface-hover: #334155;
-  --dark-border: #334155;
-  --dark-text: #f1f5f9;
-  --dark-text-secondary: #cbd5e1;
-  --dark-text-muted: #64748b;
+  /* ------------------------------------------------------------------------
+     Apple Translucent Surfaces & Glassmorphism (Light)
+     ------------------------------------------------------------------------ */
+  --surface-glass: rgba(255, 255, 255, 0.78);
+  --surface-glass-card: rgba(255, 255, 255, 0.88);
+  --surface-glass-elevated: rgba(255, 255, 255, 0.94);
+  --backdrop-blur: blur(24px) saturate(190%);
+  --backdrop-blur-sm: blur(12px) saturate(180%);
+  --glass-border: rgba(255, 255, 255, 0.5);
 
-  /* Spacing */
+  /* ------------------------------------------------------------------------
+     Semantic Status Colors (Apple Human Interface Standard)
+     ------------------------------------------------------------------------ */
+  --success: #34c759;
+  --success-hover: #2db34f;
+  --success-bg: rgba(52, 199, 89, 0.12);
+  --warning: #ff9500;
+  --warning-hover: #e08300;
+  --warning-bg: rgba(255, 149, 0, 0.12);
+  --danger: #ff3b30;
+  --danger-hover: #e02f25;
+  --danger-bg: rgba(255, 59, 48, 0.12);
+  --info: #0071e3;
+  --info-hover: #0060c2;
+  --info-bg: rgba(0, 113, 227, 0.12);
+
+  /* ------------------------------------------------------------------------
+     Dark Mode Values (Default Exposure for Legacy In-line Lookups)
+     ------------------------------------------------------------------------ */
+  --dark-bg: #000000;
+  --dark-surface: #1c1c1e;
+  --dark-surface-hover: #2c2c2e;
+  --dark-border: rgba(255, 255, 255, 0.12);
+  --dark-text: #f5f5f7;
+  --dark-text-secondary: #a1a1a6;
+  --dark-text-muted: #6e6e73;
+
+  /* ------------------------------------------------------------------------
+     Workspace & Legacy Aliases (Maintained for Backward Compatibility)
+     ------------------------------------------------------------------------ */
+  --ws-bg: #f5f5f7;
+  --ws-surface: #ffffff;
+  --ws-text: #1d1d1f;
+  --ws-muted: #86868b;
+  --ws-border: rgba(0, 0, 0, 0.08);
+  --ws-accent: #0071e3;
+
+  --tf-primary: #0071e3;
+  --tf-primary-hover: #0077ed;
+  --tf-primary-soft: rgba(0, 113, 227, 0.14);
+  --tf-text: #1d1d1f;
+  --tf-muted: #86868b;
+  --tf-border: rgba(0, 0, 0, 0.08);
+  --tf-surface: #ffffff;
+  --tf-background: #f5f5f7;
+  --tf-radius: 14px;
+  --tf-transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ------------------------------------------------------------------------
+     Spacing Scale
+     ------------------------------------------------------------------------ */
+  --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --space-3xl: 64px;
 
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* ------------------------------------------------------------------------
+     Continuous Radii (Apple Squircle Aesthetics)
+     ------------------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-  --shadow-focus: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  /* ------------------------------------------------------------------------
+     Ambient Diffused Shadows (Multi-stop Lighting)
+     ------------------------------------------------------------------------ */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 14px 34px -4px rgba(0, 0, 0, 0.09), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.12), 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 3.5px rgba(0, 113, 227, 0.25);
+  --shadow-focus-danger: 0 0 0 3.5px rgba(255, 59, 48, 0.25);
 
-  /* Typography */
-  --font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
-
-  /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
+  /* ------------------------------------------------------------------------
+     Transitions & Fluid Motion (Apple Spring / Ease Curves)
+     ------------------------------------------------------------------------ */
+  --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.38s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ============================================
-   Reset & Base
-   ============================================ */
+/* ==========================================================================
+   Dark Theme Token Overrides
+   Activated automatically when .dark, .app.dark, or .workspace-dark is active
+   ========================================================================== */
 
-* {
+.dark,
+.app.dark,
+.workspace-dark,
+[data-theme="dark"] {
+  /* Primary Accents */
+  --primary: #0a84ff;
+  --primary-hover: #409cff;
+  --primary-active: #006ee6;
+  --primary-light: rgba(10, 132, 255, 0.15);
+  --primary-soft: rgba(10, 132, 255, 0.22);
+
+  /* Surfaces & Backgrounds */
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-hover: #2c2c2e;
+  --surface-active: #3a3a3c;
+  --card-bg: #1c1c1e;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.12);
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Text Colors */
+  --text-primary: #f5f5f7;
+  --text-color: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-muted: #6e6e73;
+  --text-tertiary: #48484a;
+
+  /* Apple Translucent Surfaces & Glassmorphism (Dark) */
+  --surface-glass: rgba(28, 28, 30, 0.76);
+  --surface-glass-card: rgba(28, 28, 30, 0.88);
+  --surface-glass-elevated: rgba(38, 38, 42, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.14);
+
+  /* Status Colors */
+  --success: #30d158;
+  --success-hover: #3be265;
+  --success-bg: rgba(48, 209, 88, 0.16);
+  --warning: #ff9f0a;
+  --warning-hover: #ffb338;
+  --warning-bg: rgba(255, 159, 10, 0.16);
+  --danger: #ff453a;
+  --danger-hover: #ff6961;
+  --danger-bg: rgba(255, 69, 58, 0.16);
+  --info: #0a84ff;
+  --info-hover: #409cff;
+  --info-bg: rgba(10, 132, 255, 0.16);
+
+  /* Workspace & Legacy Aliases (Dark) */
+  --ws-bg: #000000;
+  --ws-surface: #1c1c1e;
+  --ws-text: #f5f5f7;
+  --ws-muted: #a1a1a6;
+  --ws-border: rgba(255, 255, 255, 0.12);
+  --ws-accent: #0a84ff;
+
+  --tf-primary: #0a84ff;
+  --tf-primary-hover: #409cff;
+  --tf-primary-soft: rgba(10, 132, 255, 0.22);
+  --tf-text: #f5f5f7;
+  --tf-muted: #a1a1a6;
+  --tf-border: rgba(255, 255, 255, 0.12);
+  --tf-surface: #1c1c1e;
+  --tf-background: #000000;
+
+  /* Ambient Shadows (Dark) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.45), 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 18px -2px rgba(0, 0, 0, 0.55), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 14px 34px -4px rgba(0, 0, 0, 0.65), 0 4px 12px -2px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.75), 0 8px 24px -4px rgba(0, 0, 0, 0.55);
+  --shadow-focus: 0 0 0 3.5px rgba(10, 132, 255, 0.35);
+}
+
+/* ==========================================================================
+   Reset & Base Foundations
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -89,15 +254,21 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
   line-height: 1.5;
+  letter-spacing: var(--letter-spacing-normal);
   color: var(--text-primary);
   background-color: var(--bg);
   min-height: 100vh;
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
 }
 
 #root {
@@ -106,23 +277,23 @@ body {
   flex-direction: column;
 }
 
-/* ============================================
-   Focus States (Accessibility)
-   ============================================ */
+/* ==========================================================================
+   Accessibility & Focus States
+   ========================================================================== */
 
 :focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--shadow-focus);
   border-radius: var(--radius-sm);
 }
 
-/* ============================================
-   Scrollbar
-   ============================================ */
+/* ==========================================================================
+   Apple-Style Smooth Scrollbar
+   ========================================================================== */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 
 ::-webkit-scrollbar-track {
@@ -131,9 +302,13 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-strong);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+  background-clip: content-box;
 }
