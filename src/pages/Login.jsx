@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  FaLock,
-  FaEnvelope,
-  FaEye,
-  FaEyeSlash,
-  FaArrowRight,
-  FaTasks,
-} from "react-icons/fa";
+  FiLock,
+  FiMail,
+  FiEye,
+  FiEyeOff,
+  FiArrowRight,
+  FiShield,
+  FiAlertTriangle,
+} from "react-icons/fi";
 
 function Login() {
   const navigate = useNavigate();
@@ -98,19 +99,63 @@ function Login() {
 
   return (
     <div className="login-container">
+      {/* Dynamic Background Light Layers */}
+      <div className="auth-ambient-orb auth-ambient-orb-primary" aria-hidden="true" />
+      <div className="auth-ambient-orb auth-ambient-orb-secondary" aria-hidden="true" />
+      <div className="auth-grid-overlay" aria-hidden="true" />
+
       <div className="login-card">
         <div className="login-header">
-          <div className="login-brand-icon" aria-hidden="true">
-            <FaTasks />
+          {/* Status Badge */}
+          <div className="auth-chip" aria-hidden="true">
+            <span className="auth-chip-dot" />
+            <span>TaskFlow Intelligence</span>
           </div>
 
-          <h1>Welcome Back!</h1>
-          <p>Log in to your TaskFlow workspace.</p>
+          <div className="login-brand-icon" aria-hidden="true">
+            <svg
+              className="brand-orchestrator-glyph"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ width: "36px", height: "36px" }}
+            >
+              <defs>
+                <linearGradient id="tfGradLogin" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#A78BFA" />
+                  <stop offset="50%" stopColor="#818CF8" />
+                  <stop offset="100%" stopColor="#4F46E5" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="2"
+                y="2"
+                width="28"
+                height="28"
+                rx="8"
+                fill="#0F1219"
+                stroke="rgba(255,255,255,0.14)"
+                strokeWidth="1"
+              />
+              <path
+                d="M8 17L13 22L24 10"
+                stroke="url(#tfGradLogin)"
+                strokeWidth="2.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="24" cy="10" r="2" fill="#A78BFA" />
+            </svg>
+          </div>
+
+          <h1>Welcome Back</h1>
+          <p>Sign in to your TaskFlow workspace.</p>
         </div>
 
         {error && (
           <div className="form-error" role="alert" aria-live="polite">
-            {error}
+            <FiAlertTriangle className="form-error-icon" aria-hidden="true" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -119,7 +164,7 @@ function Login() {
             <label htmlFor="login-email">Email Address</label>
 
             <div className="login-input-wrap">
-              <FaEnvelope
+              <FiMail
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -146,7 +191,7 @@ function Login() {
             <label htmlFor="login-password">Password</label>
 
             <div className="login-input-wrap">
-              <FaLock
+              <FiLock
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -176,7 +221,7 @@ function Login() {
                 title={showPassword ? "Hide password" : "Show password"}
                 disabled={loading}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
           </div>
@@ -189,12 +234,12 @@ function Login() {
             {loading ? (
               <>
                 <span className="login-spinner" aria-hidden="true" />
-                Logging in...
+                <span>Signing in...</span>
               </>
             ) : (
               <>
-                Login to TaskFlow
-                <FaArrowRight aria-hidden="true" />
+                <span>Sign in to TaskFlow</span>
+                <FiArrowRight className="login-submit-arrow" aria-hidden="true" />
               </>
             )}
           </button>
@@ -208,13 +253,15 @@ function Login() {
             className="login-register-button"
             onClick={() => navigate("/register")}
           >
-            Create account <span aria-hidden="true">→</span>
+            <span>Create account</span>
+            <span aria-hidden="true">→</span>
           </button>
         </div>
 
-        <p className="login-footer">
-          Your productivity journey starts here.
-        </p>
+        <div className="auth-trust-badge">
+          <FiShield className="auth-trust-icon" aria-hidden="true" />
+          <span>End-to-end encrypted workspace</span>
+        </div>
       </div>
     </div>
   );

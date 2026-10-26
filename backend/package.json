@@ -5,13 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test_health_and_connectivity.js && node test_ai_routes.js && node test_ai_direct.js && node test_auth_and_parse.js && node test_reschedule_api.js && node test_analytics.js && node test_security_and_reliability.js && node test_ai_intent_and_quality.js && node test_gemini_integration.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^2.31.0",
+    "@google/generative-ai": "^0.24.1",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",

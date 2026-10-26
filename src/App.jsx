@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -14,10 +14,18 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import {
+  ModernToastIcon,
+  ModernCloseButton,
+} from "./components/ModernToastComponents";
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("darkMode") === "true";
+    const saved = localStorage.getItem("darkMode");
+    if (saved !== null) {
+      return saved === "true";
+    }
+    return true; // Default to dark mode if no saved preference
   });
 
   const location = useLocation();
@@ -38,6 +46,16 @@ function App() {
               <Home
                 darkMode={darkMode}
                 setDarkMode={handleDarkModeChange}
+              />
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Home
+                darkMode={darkMode}
+                setDarkMode={handleDarkModeChange}
+                initialView="profile"
               />
             }
           />
@@ -73,12 +91,16 @@ function App() {
 
       <ToastContainer
         position="top-right"
-        autoClose={3000}
+        autoClose={3200}
         hideProgressBar={false}
         newestOnTop
         closeOnClick
         pauseOnHover
-        theme={darkMode ? "dark" : "colored"}
+        stacked={false}
+        transition={Slide}
+        theme={darkMode ? "dark" : "light"}
+        icon={ModernToastIcon}
+        closeButton={ModernCloseButton}
       />
     </div>
   );

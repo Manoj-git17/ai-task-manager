@@ -20,6 +20,9 @@ async function initializeDB() {
   // Enable foreign-key constraints.
   await db.exec("PRAGMA foreign_keys = ON;");
 
+  // Enable WAL (Write-Ahead Logging) journal mode for superior concurrency and durability
+  await db.exec("PRAGMA journal_mode = WAL;");
+
   // Wait briefly if the database is busy.
   await db.exec("PRAGMA busy_timeout = 5000;");
 
@@ -42,6 +45,21 @@ async function initializeDB() {
       dueDate TEXT,
       createdAt TEXT NOT NULL,
       userId INTEGER NOT NULL,
+      completedAt TEXT,
+      workspace TEXT DEFAULT 'Engineering Core',
+      FOREIGN KEY (userId)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      targetCount INTEGER NOT NULL DEFAULT 5,
+      category TEXT DEFAULT 'all',
+      targetDate TEXT,
+      createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      userId INTEGER NOT NULL,
       FOREIGN KEY (userId)
         REFERENCES users(id)
         ON DELETE CASCADE
@@ -52,7 +70,34 @@ async function initializeDB() {
 
     CREATE INDEX IF NOT EXISTS idx_tasks_user_created
       ON tasks(userId, id DESC);
+
+    CREATE INDEX IF NOT EXISTS idx_goals_user_id
+      ON goals(userId);
   `);
+
+  try {
+    await db.exec("ALTER TABLE tasks ADD COLUMN completedAt TEXT;");
+  } catch {
+    // Column already exists
+  }
+
+  try {
+    await db.exec("ALTER TABLE users ADD COLUMN avatar TEXT;");
+  } catch {
+    // Column already exists
+  }
+
+  try {
+    await db.exec("ALTER TABLE users ADD COLUMN createdAt TEXT;");
+  } catch {
+    // Column already exists
+  }
+
+  try {
+    await db.exec("ALTER TABLE tasks ADD COLUMN workspace TEXT DEFAULT 'Engineering Core';");
+  } catch {
+    // Column already exists
+  }
 
   return db;
 }

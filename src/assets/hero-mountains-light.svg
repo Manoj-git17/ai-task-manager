@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 420" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Sky Gradient - Warm Dawn -->
+    <linearGradient id="skyGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fdf4ee"/>
+      <stop offset="35%" stop-color="#faece1"/>
+      <stop offset="70%" stop-color="#f5e8f0"/>
+      <stop offset="100%" stop-color="#edf2f7"/>
+    </linearGradient>
+
+    <!-- Warm Golden Sun Haze -->
+    <radialGradient id="sunHaze" cx="72%" cy="28%" r="48%">
+      <stop offset="0%" stop-color="#fed7aa" stop-opacity="0.65"/>
+      <stop offset="40%" stop-color="#fbcfe8" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#fdf4ee" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Distant Mountain (Soft misty rose/slate) -->
+    <linearGradient id="mountainFarLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+
+    <!-- Mid Mountain (Warm slate lavender) -->
+    <linearGradient id="mountainMidLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b4c2d3"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <!-- Foreground Mountain (Crisp architectural slate) -->
+    <linearGradient id="mountainCloseLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+
+    <!-- Bottom Light Blend -->
+    <linearGradient id="bottomFadeLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" stop-opacity="0"/>
+      <stop offset="70%" stop-color="#f8fafc" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#f8fafc" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Base -->
+  <rect width="1400" height="420" fill="url(#skyGradLight)"/>
+  <rect width="1400" height="420" fill="url(#sunHaze)"/>
+
+  <!-- Morning Sun Disc Soft Glow -->
+  <circle cx="1020" cy="130" r="60" fill="#fed7aa" opacity="0.35"/>
+  <circle cx="1020" cy="130" r="32" fill="#fff7ed" opacity="0.6"/>
+
+  <!-- Far Mountain Range (Dramatic Alpine peaks) -->
+  <path d="M 0 290 
+           L 110 240 L 195 270 L 320 200 L 410 250 L 530 185 L 640 245 L 770 170 
+           L 890 235 L 1010 165 L 1130 225 L 1260 175 L 1350 220 L 1400 195 
+           L 1400 420 L 0 420 Z" 
+        fill="url(#mountainFarLight)" opacity="0.7"/>
+
+  <!-- Mid Mountain Range -->
+  <path d="M 0 320 
+           L 90 285 L 210 325 L 340 255 L 470 310 L 610 230 L 730 295 L 860 220 
+           L 990 280 L 1110 215 L 1220 270 L 1340 225 L 1400 250 
+           L 1400 420 L 0 420 Z" 
+        fill="url(#mountainMidLight)" opacity="0.85"/>
+
+  <!-- Foreground Mountain Ridge -->
+  <path d="M 0 355 
+           L 140 315 L 280 360 L 440 285 L 590 345 L 750 275 L 910 335 L 1070 265 
+           L 1210 320 L 1330 280 L 1400 305 
+           L 1400 420 L 0 420 Z" 
+        fill="url(#mountainCloseLight)"/>
+
+  <!-- Golden Sun Rim Light -->
+  <path d="M 0 355 L 140 315 L 280 360 L 440 285 L 590 345 L 750 275 L 910 335 L 1070 265 L 1210 320 L 1330 280 L 1400 305" 
+        fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.3"/>
+
+  <!-- Soft Bottom Blend Gradient -->
+  <rect y="240" width="1400" height="180" fill="url(#bottomFadeLight)"/>
+</svg>

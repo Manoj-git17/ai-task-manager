@@ -1,6 +1,6 @@
 /* ==========================================================================
-   TASKFLOW DESIGN SYSTEM — APPLE-INSPIRED ADAPTIVE DESIGN TOKENS
-   Refined typography, translucent surfaces, squircle geometry & fluid motion.
+   TASKFLOW DESIGN SYSTEM — LINEAR-INSPIRED ADAPTIVE DESIGN TOKENS
+   Restrained palette, precision typography, subtle separators & fluid motion.
    Preserves 100% backward compatibility with all legacy variable references.
    ========================================================================== */
 
@@ -8,17 +8,17 @@
   /* ------------------------------------------------------------------------
      Typography
      ------------------------------------------------------------------------ */
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
-    "SF Pro", "Inter", -apple-system-body, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Monaco, Consolas, monospace;
 
-  --font-size-xs: 12px;
-  --font-size-sm: 13.5px;
-  --font-size-md: 15px;
-  --font-size-lg: 18px;
-  --font-size-xl: 22px;
-  --font-size-2xl: 28px;
-  --font-size-3xl: 36px;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -27,91 +27,91 @@
 
   --letter-spacing-tight: -0.022em;
   --letter-spacing-normal: -0.011em;
-  --letter-spacing-wide: 0.02em;
+  --letter-spacing-wide: 0.04em;
 
   /* ------------------------------------------------------------------------
-     Light Theme Palette (Apple System Neutral & Dynamic Accents)
+     Light Theme Palette (Linear / Apple Neutral Studio)
      ------------------------------------------------------------------------ */
-  --primary: #0071e3;
-  --primary-hover: #0077ed;
-  --primary-active: #005bb5;
-  --primary-light: rgba(0, 113, 227, 0.08);
-  --primary-soft: rgba(0, 113, 227, 0.14);
+  --primary: #5e6ad2;
+  --primary-hover: #505ac5;
+  --primary-active: #444cb3;
+  --primary-light: rgba(94, 106, 210, 0.08);
+  --primary-soft: rgba(94, 106, 210, 0.14);
 
-  --bg: #f5f5f7;
+  --bg: #f8f9fa;
   --surface: #ffffff;
-  --surface-hover: #f0f0f4;
-  --surface-active: #e8e8ed;
+  --surface-hover: #f1f3f5;
+  --surface-active: #e9ecef;
   --card-bg: #ffffff;
 
-  --border: rgba(0, 0, 0, 0.08);
-  --border-color: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.16);
-  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border: #e6e8eb;
+  --border-color: #e6e8eb;
+  --border-strong: #d0d5dd;
+  --border-subtle: #f0f2f5;
 
-  --text-primary: #1d1d1f;
-  --text-color: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-muted: #86868b;
-  --text-tertiary: #a1a1a6;
-
-  /* ------------------------------------------------------------------------
-     Apple Translucent Surfaces & Glassmorphism (Light)
-     ------------------------------------------------------------------------ */
-  --surface-glass: rgba(255, 255, 255, 0.78);
-  --surface-glass-card: rgba(255, 255, 255, 0.88);
-  --surface-glass-elevated: rgba(255, 255, 255, 0.94);
-  --backdrop-blur: blur(24px) saturate(190%);
-  --backdrop-blur-sm: blur(12px) saturate(180%);
-  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-primary: #111827;
+  --text-color: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #8b949e;
+  --text-tertiary: #c9d1d9;
 
   /* ------------------------------------------------------------------------
-     Semantic Status Colors (Apple Human Interface Standard)
+     Translucent Surfaces & Overlays (Light)
      ------------------------------------------------------------------------ */
-  --success: #34c759;
-  --success-hover: #2db34f;
-  --success-bg: rgba(52, 199, 89, 0.12);
-  --warning: #ff9500;
-  --warning-hover: #e08300;
-  --warning-bg: rgba(255, 149, 0, 0.12);
-  --danger: #ff3b30;
-  --danger-hover: #e02f25;
-  --danger-bg: rgba(255, 59, 48, 0.12);
-  --info: #0071e3;
-  --info-hover: #0060c2;
-  --info-bg: rgba(0, 113, 227, 0.12);
+  --surface-glass: rgba(255, 255, 255, 0.85);
+  --surface-glass-card: rgba(255, 255, 255, 0.92);
+  --surface-glass-elevated: rgba(255, 255, 255, 0.98);
+  --backdrop-blur: blur(16px);
+  --backdrop-blur-sm: blur(8px);
+  --glass-border: rgba(0, 0, 0, 0.06);
+
+  /* ------------------------------------------------------------------------
+     Semantic Status Colors (Linear Refined Indicators)
+     ------------------------------------------------------------------------ */
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --info: #5e6ad2;
+  --info-hover: #505ac5;
+  --info-bg: rgba(94, 106, 210, 0.1);
 
   /* ------------------------------------------------------------------------
      Dark Mode Values (Default Exposure for Legacy In-line Lookups)
      ------------------------------------------------------------------------ */
-  --dark-bg: #000000;
-  --dark-surface: #1c1c1e;
-  --dark-surface-hover: #2c2c2e;
-  --dark-border: rgba(255, 255, 255, 0.12);
-  --dark-text: #f5f5f7;
-  --dark-text-secondary: #a1a1a6;
-  --dark-text-muted: #6e6e73;
+  --dark-bg: #0b0c0e;
+  --dark-surface: #121316;
+  --dark-surface-hover: #191b1f;
+  --dark-border: rgba(255, 255, 255, 0.08);
+  --dark-text: #f0f2f5;
+  --dark-text-secondary: #9aa1ad;
+  --dark-text-muted: #626974;
 
   /* ------------------------------------------------------------------------
      Workspace & Legacy Aliases (Maintained for Backward Compatibility)
      ------------------------------------------------------------------------ */
-  --ws-bg: #f5f5f7;
+  --ws-bg: #f8f9fa;
   --ws-surface: #ffffff;
-  --ws-text: #1d1d1f;
-  --ws-muted: #86868b;
-  --ws-border: rgba(0, 0, 0, 0.08);
-  --ws-accent: #0071e3;
+  --ws-text: #111827;
+  --ws-muted: #8b949e;
+  --ws-border: #e6e8eb;
+  --ws-accent: #5e6ad2;
 
-  --tf-primary: #0071e3;
-  --tf-primary-hover: #0077ed;
-  --tf-primary-soft: rgba(0, 113, 227, 0.14);
-  --tf-text: #1d1d1f;
-  --tf-muted: #86868b;
-  --tf-border: rgba(0, 0, 0, 0.08);
+  --tf-primary: #5e6ad2;
+  --tf-primary-hover: #505ac5;
+  --tf-primary-soft: rgba(94, 106, 210, 0.12);
+  --tf-text: #111827;
+  --tf-muted: #8b949e;
+  --tf-border: #e6e8eb;
   --tf-surface: #ffffff;
-  --tf-background: #f5f5f7;
-  --tf-radius: 14px;
-  --tf-transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --tf-background: #f8f9fa;
+  --tf-radius: 8px;
+  --tf-transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ------------------------------------------------------------------------
      Spacing Scale
@@ -119,123 +119,124 @@
   --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
+  --space-md: 14px;
+  --space-lg: 20px;
+  --space-xl: 28px;
+  --space-2xl: 40px;
+  --space-3xl: 56px;
 
   /* ------------------------------------------------------------------------
-     Continuous Radii (Apple Squircle Aesthetics)
+     Linear Precision Radii (Crisp, Not Bubbly)
      ------------------------------------------------------------------------ */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
-  --radius-2xl: 28px;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
   --radius-full: 9999px;
 
   /* ------------------------------------------------------------------------
-     Ambient Diffused Shadows (Multi-stop Lighting)
+     Precise Ambient Shadows (Subtle Depth, No Heavy Muddy Shadows)
      ------------------------------------------------------------------------ */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 14px 34px -4px rgba(0, 0, 0, 0.09), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.12), 0 8px 24px -4px rgba(0, 0, 0, 0.06);
-  --shadow-focus: 0 0 0 3.5px rgba(0, 113, 227, 0.25);
-  --shadow-focus-danger: 0 0 0 3.5px rgba(255, 59, 48, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 2.5px rgba(94, 106, 210, 0.35);
+  --shadow-focus-danger: 0 0 0 2.5px rgba(239, 68, 68, 0.35);
 
   /* ------------------------------------------------------------------------
-     Transitions & Fluid Motion (Apple Spring / Ease Curves)
+     Transitions & Fluid Motion (Apple / Linear Fast Curves)
      ------------------------------------------------------------------------ */
   --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-fast: 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 0.24s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================================================
-   Dark Theme Token Overrides
-   Activated automatically when .dark, .app.dark, or .workspace-dark is active
+   Dark Theme Token Overrides (Linear Obsidian Aesthetic)
    ========================================================================== */
 
 .dark,
 .app.dark,
 .workspace-dark,
 [data-theme="dark"] {
-  /* Primary Accents */
-  --primary: #0a84ff;
-  --primary-hover: #409cff;
-  --primary-active: #006ee6;
-  --primary-light: rgba(10, 132, 255, 0.15);
-  --primary-soft: rgba(10, 132, 255, 0.22);
+  /* Signature Linear Indigo in Dark Mode */
+  --primary: #8b83f6;
+  --primary-hover: #9c95f8;
+  --primary-active: #7870ee;
+  --primary-light: rgba(139, 131, 246, 0.12);
+  --primary-soft: rgba(139, 131, 246, 0.18);
 
-  /* Surfaces & Backgrounds */
-  --bg: #000000;
-  --surface: #1c1c1e;
-  --surface-hover: #2c2c2e;
-  --surface-active: #3a3a3c;
-  --card-bg: #1c1c1e;
+  /* Surfaces & Backgrounds - TaskFlow 2.1 Obsidian Palette */
+  --bg: #07080a;
+  --sidebar-bg: #0a0c10;
+  --surface: #0e1117;
+  --surface-hover: #151922;
+  --surface-active: #1b202c;
+  --card-bg: #0e1117;
 
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.12);
-  --border-color: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.22);
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  /* Subtle Hairline Dividers */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.035);
+  --border-glow: rgba(139, 131, 246, 0.28);
 
   /* Text Colors */
-  --text-primary: #f5f5f7;
-  --text-color: #f5f5f7;
-  --text-secondary: #a1a1a6;
-  --text-muted: #6e6e73;
-  --text-tertiary: #48484a;
+  --text-primary: #f1f3f5;
+  --text-color: #f1f3f5;
+  --text-secondary: #9299a5;
+  --text-muted: #656d7a;
+  --text-tertiary: #40454e;
 
-  /* Apple Translucent Surfaces & Glassmorphism (Dark) */
-  --surface-glass: rgba(28, 28, 30, 0.76);
-  --surface-glass-card: rgba(28, 28, 30, 0.88);
-  --surface-glass-elevated: rgba(38, 38, 42, 0.92);
-  --glass-border: rgba(255, 255, 255, 0.14);
+  /* Translucent Surfaces & Overlays (Dark) */
+  --surface-glass: rgba(19, 22, 27, 0.88);
+  --surface-glass-card: rgba(19, 22, 27, 0.94);
+  --surface-glass-elevated: rgba(25, 29, 36, 0.96);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
-  /* Status Colors */
-  --success: #30d158;
-  --success-hover: #3be265;
-  --success-bg: rgba(48, 209, 88, 0.16);
-  --warning: #ff9f0a;
-  --warning-hover: #ffb338;
-  --warning-bg: rgba(255, 159, 10, 0.16);
-  --danger: #ff453a;
-  --danger-hover: #ff6961;
-  --danger-bg: rgba(255, 69, 58, 0.16);
-  --info: #0a84ff;
-  --info-hover: #409cff;
-  --info-bg: rgba(10, 132, 255, 0.16);
+  /* Status Colors (Dark) */
+  --success: #10b981;
+  --success-hover: #34d399;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --warning: #f59e0b;
+  --warning-hover: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --danger: #ef4444;
+  --danger-hover: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --info: #8b83f6;
+  --info-hover: #9c95f8;
+  --info-bg: rgba(139, 131, 246, 0.12);
 
   /* Workspace & Legacy Aliases (Dark) */
-  --ws-bg: #000000;
-  --ws-surface: #1c1c1e;
-  --ws-text: #f5f5f7;
-  --ws-muted: #a1a1a6;
-  --ws-border: rgba(255, 255, 255, 0.12);
-  --ws-accent: #0a84ff;
+  --ws-bg: #0b0d10;
+  --ws-surface: #13161b;
+  --ws-text: #f1f3f5;
+  --ws-muted: #656d7a;
+  --ws-border: rgba(255, 255, 255, 0.08);
+  --ws-accent: #8b83f6;
 
-  --tf-primary: #0a84ff;
-  --tf-primary-hover: #409cff;
-  --tf-primary-soft: rgba(10, 132, 255, 0.22);
-  --tf-text: #f5f5f7;
-  --tf-muted: #a1a1a6;
-  --tf-border: rgba(255, 255, 255, 0.12);
-  --tf-surface: #1c1c1e;
-  --tf-background: #000000;
+  --tf-primary: #8b83f6;
+  --tf-primary-hover: #9c95f8;
+  --tf-primary-soft: rgba(139, 131, 246, 0.16);
+  --tf-text: #f1f3f5;
+  --tf-muted: #656d7a;
+  --tf-border: rgba(255, 255, 255, 0.08);
+  --tf-surface: #13161b;
+  --tf-background: #0b0d10;
 
   /* Ambient Shadows (Dark) */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.45), 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 18px -2px rgba(0, 0, 0, 0.55), 0 2px 6px -1px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 14px 34px -4px rgba(0, 0, 0, 0.65), 0 4px 12px -2px rgba(0, 0, 0, 0.45);
-  --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.75), 0 8px 24px -4px rgba(0, 0, 0, 0.55);
-  --shadow-focus: 0 0 0 3.5px rgba(10, 132, 255, 0.35);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.09);
+  --shadow-focus: 0 0 0 2.5px rgba(110, 121, 214, 0.4);
 }
 
 /* ==========================================================================
@@ -288,12 +289,12 @@ body {
 }
 
 /* ==========================================================================
-   Apple-Style Smooth Scrollbar
+   Refined Minimal Scrollbar
    ========================================================================== */
 
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -303,7 +304,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border-strong);
   border-radius: var(--radius-full);
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   background-clip: content-box;
   transition: background-color var(--transition-fast);
 }

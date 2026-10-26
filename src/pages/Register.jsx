@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaUser,
-  FaEnvelope,
-  FaLock,
-  FaEye,
-  FaEyeSlash,
-  FaTasks,
-  FaArrowRight,
-} from "react-icons/fa";
+  FiUser,
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+  FiArrowRight,
+  FiShield,
+  FiAlertTriangle,
+} from "react-icons/fi";
 
 function Register() {
   const navigate = useNavigate();
@@ -124,20 +125,63 @@ function Register() {
 
   return (
     <div className="login-container">
+      {/* Dynamic Background Light Layers */}
+      <div className="auth-ambient-orb auth-ambient-orb-primary" aria-hidden="true" />
+      <div className="auth-ambient-orb auth-ambient-orb-secondary" aria-hidden="true" />
+      <div className="auth-grid-overlay" aria-hidden="true" />
+
       <div className="login-card">
         <div className="login-header">
+          {/* Status Badge */}
+          <div className="auth-chip" aria-hidden="true">
+            <span className="auth-chip-dot" />
+            <span>Enterprise Workspace</span>
+          </div>
+
           <div className="login-brand-icon" aria-hidden="true">
-            <FaTasks />
+            <svg
+              className="brand-orchestrator-glyph"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ width: "36px", height: "36px" }}
+            >
+              <defs>
+                <linearGradient id="tfGradReg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#A78BFA" />
+                  <stop offset="50%" stopColor="#818CF8" />
+                  <stop offset="100%" stopColor="#4F46E5" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="2"
+                y="2"
+                width="28"
+                height="28"
+                rx="8"
+                fill="#0F1219"
+                stroke="rgba(255,255,255,0.14)"
+                strokeWidth="1"
+              />
+              <path
+                d="M8 17L13 22L24 10"
+                stroke="url(#tfGradReg)"
+                strokeWidth="2.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="24" cy="10" r="2" fill="#A78BFA" />
+            </svg>
           </div>
 
           <h1>Create Account</h1>
-
           <p>Start organizing your tasks with TaskFlow.</p>
         </div>
 
         {error && (
           <div className="form-error" role="alert" aria-live="polite">
-            {error}
+            <FiAlertTriangle className="form-error-icon" aria-hidden="true" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -147,7 +191,7 @@ function Register() {
             <label htmlFor="register-name">Full Name</label>
 
             <div className="login-input-wrap">
-              <FaUser
+              <FiUser
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -175,7 +219,7 @@ function Register() {
             <label htmlFor="register-email">Email Address</label>
 
             <div className="login-input-wrap">
-              <FaEnvelope
+              <FiMail
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -203,7 +247,7 @@ function Register() {
             <label htmlFor="register-password">Password</label>
 
             <div className="login-input-wrap">
-              <FaLock
+              <FiLock
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -236,7 +280,7 @@ function Register() {
                 }
                 disabled={loading}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
           </div>
@@ -248,7 +292,7 @@ function Register() {
             </label>
 
             <div className="login-input-wrap">
-              <FaLock
+              <FiLock
                 className="login-input-icon"
                 aria-hidden="true"
               />
@@ -281,7 +325,7 @@ function Register() {
                 }
                 disabled={loading}
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
           </div>
@@ -293,11 +337,14 @@ function Register() {
             disabled={loading}
           >
             {loading ? (
-              "Creating account..."
+              <>
+                <span className="login-spinner" aria-hidden="true" />
+                <span>Creating account...</span>
+              </>
             ) : (
               <>
-                Create Account
-                <FaArrowRight aria-hidden="true" />
+                <span>Create Account</span>
+                <FiArrowRight className="login-submit-arrow" aria-hidden="true" />
               </>
             )}
           </button>
@@ -312,13 +359,15 @@ function Register() {
             onClick={() => navigate("/login")}
             disabled={loading}
           >
-            Login <span aria-hidden="true">→</span>
+            <span>Login</span>
+            <span aria-hidden="true">→</span>
           </button>
         </div>
 
-        <p className="login-footer">
-          Plan smarter. Achieve more.
-        </p>
+        <div className="auth-trust-badge">
+          <FiShield className="auth-trust-icon" aria-hidden="true" />
+          <span>End-to-end encrypted workspace</span>
+        </div>
       </div>
     </div>
   );

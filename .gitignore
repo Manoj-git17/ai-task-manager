@@ -26,11 +26,18 @@ dist-ssr
 .env
 .env.*
 !.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
 
 # Database files
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
 
 # Dependencies and build files
 node_modules/
