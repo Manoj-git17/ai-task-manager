@@ -24,8 +24,7 @@ function Register() {
   const [loading, setLoading] = useState(false);
 
   const API_URL = (
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api"
+    import.meta.env.VITE_API_URL || "/api"
   ).replace(/\/+$/, "");
 
   async function handleSubmit(e) {
@@ -70,17 +69,39 @@ function Register() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: cleanName,
-          email: cleanEmail,
-          password,
-        }),
-      });
+      let response;
+      try {
+        response = await fetch(`${API_URL}/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: cleanName,
+            email: cleanEmail,
+            password,
+          }),
+        });
+      } catch (networkErr) {
+        const fallbackUrl = API_URL.startsWith("http")
+          ? "/api/register"
+          : "http://localhost:5000/api/register";
+        try {
+          response = await fetch(fallbackUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: cleanName,
+              email: cleanEmail,
+              password,
+            }),
+          });
+        } catch {
+          throw networkErr;
+        }
+      }
 
       const data = await response.json().catch(() => ({}));
 

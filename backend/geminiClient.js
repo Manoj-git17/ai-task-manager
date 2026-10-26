@@ -9,6 +9,16 @@
  * - Key is NEVER leaked to frontend, responses, logs, or git.
  */
 
+const path = require("path");
+// Ensure environment variables are loaded regardless of import order or working directory
+try {
+  require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+  require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+  require("dotenv").config();
+} catch {
+  // Gracefully continue if dotenv fails
+}
+
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // Active mock provider for offline testing & quota conservation
@@ -23,26 +33,32 @@ function clearMockGeminiProvider() {
 }
 
 /**
+ * Retrieves configured Gemini API Key without logging it
+ * Supports official GEMINI_API_KEY, GOOGLE_API_KEY, and GOOGLE_GEMINI_API_KEY
+ */
+function getGeminiApiKey() {
+  return (
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_GEMINI_API_KEY ||
+    ""
+  ).trim();
+}
+
+/**
  * Checks whether GEMINI_API_KEY is configured in backend environment
  */
 function isGeminiConfigured() {
   if (mockProviderInstance) return true;
-  const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
-  return typeof key === "string" && key.trim().length > 10;
+  const key = getGeminiApiKey();
+  return typeof key === "string" && key.length > 10;
 }
 
 /**
- * Retrieves configured Gemini API Key without logging it
- */
-function getGeminiApiKey() {
-  return (process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || "").trim();
-}
-
-/**
- * Retrieves configured model name (default: gemini-1.5-flash)
+ * Retrieves configured model name (default: gemini-3.5-flash)
  */
 function getGeminiModelName() {
-  return (process.env.GEMINI_MODEL || "gemini-1.5-flash").trim();
+  return (process.env.GEMINI_MODEL || "gemini-3.5-flash").trim();
 }
 
 /**
@@ -104,9 +120,9 @@ async function callGemini({
 
   const model = genAI.getGenerativeModel(modelConfig);
 
-  // Timeout safety wrapper
+  let timerId = null;
   const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
+    timerId = setTimeout(() => {
       const err = new Error(`Gemini API request timed out after ${timeoutMs / 1000}s`);
       err.name = "TimeoutError";
       reject(err);
@@ -116,6 +132,10 @@ async function callGemini({
   try {
     const apiCallPromise = model.generateContent(prompt);
     const result = await Promise.race([apiCallPromise, timeoutPromise]);
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
     const response = await result.response;
     const text = response.text();
 
@@ -134,6 +154,9 @@ async function callGemini({
       provider: `google-${targetModel}`,
     };
   } catch (err) {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
     const errMsg = String(err.message || err);
 
     // Classify known API failures gracefully without leaking secrets
@@ -164,7 +187,16 @@ async function callGemini({
       };
     }
 
-    if (/404|not\s*found|models\//i.test(errMsg)) {
+    if (/503|unavailable|high\s*demand|overloaded/i.test(errMsg)) {
+      return {
+        success: false,
+        error: "SERVICE_UNAVAILABLE",
+        message: "Gemini API is temporarily experiencing high demand. Please try again shortly.",
+        provider: targetModel,
+      };
+    }
+
+    if (/404|\bnot\s*found\b/i.test(errMsg)) {
       return {
         success: false,
         error: "MODEL_NOT_FOUND",

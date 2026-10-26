@@ -30,6 +30,10 @@ const defaultAllowedOrigins = [
   "http://127.0.0.1:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5174",
+  "http://localhost:5175",
+  "http://127.0.0.1:5175",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
   "http://localhost:5000",
   "http://127.0.0.1:5000",
   "http://localhost:3000",
@@ -46,16 +50,15 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/+$/, "");
       if (
-        allowedOrigins.includes(origin) ||
-        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(cleanOrigin) ||
+        allowedOrigins.some((ao) => cleanOrigin.startsWith(ao)) ||
         process.env.NODE_ENV !== "production"
       ) {
         return callback(null, true);
       }
-      return callback(
-        new Error(`CORS policy violation: Origin '${origin}' is not authorized.`)
-      );
+      return callback(null, false);
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -962,7 +965,7 @@ app.use((req, res) => {
 /* -------------------- START SERVER & GRACEFUL SHUTDOWN -------------------- */
 
 const PORT = Number(process.env.PORT) || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
+const HOST = process.env.HOST || null;
 let serverInstance = null;
 
 async function startServer(port = PORT, host = HOST) {
@@ -975,11 +978,22 @@ async function startServer(port = PORT, host = HOST) {
     db = await initializeDB();
 
     return new Promise((resolve, reject) => {
-      serverInstance = app.listen(port, host, () => {
-        const displayHost = host === "0.0.0.0" ? "localhost" : host;
+      const onListening = () => {
+        const addr = serverInstance.address();
+        const displayHost =
+          typeof addr === "object" && addr && addr.address === "::"
+            ? "localhost"
+            : (host || "localhost");
         console.log(`AI Task Manager API listening on http://${displayHost}:${port}`);
         resolve(serverInstance);
-      });
+      };
+
+      if (host) {
+        serverInstance = app.listen(port, host, onListening);
+      } else {
+        // Dual-stack listener: accepts connections on IPv6 (::1/localhost) and IPv4 (127.0.0.1/0.0.0.0)
+        serverInstance = app.listen(port, onListening);
+      }
 
       serverInstance.on("error", (err) => {
         if (err.code === "EADDRINUSE") {

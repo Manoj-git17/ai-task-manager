@@ -55,7 +55,9 @@ async function runGeminiIntegrationTests() {
   console.log("[A] Testing Missing API Key Behavior:");
   clearMockGeminiProvider();
   const originalKey = process.env.GEMINI_API_KEY;
+  const originalGoogleKey = process.env.GOOGLE_API_KEY;
   delete process.env.GEMINI_API_KEY;
+  delete process.env.GOOGLE_API_KEY;
   delete process.env.GOOGLE_GEMINI_API_KEY;
 
   assert.strictEqual(isGeminiConfigured(), false, "isGeminiConfigured should return false when key is absent");
@@ -70,6 +72,11 @@ async function runGeminiIntegrationTests() {
   assert.strictEqual(planWithoutKey.success, false);
   assert.strictEqual(planWithoutKey.error, "MISSING_KEY");
   console.log("✓ Missing API key handled cleanly without unhandled exceptions or secret leakage");
+
+  // Verify GOOGLE_API_KEY environment variable is detected
+  process.env.GOOGLE_API_KEY = "test_google_api_key_long_enough_12345";
+  assert.strictEqual(isGeminiConfigured(), true, "isGeminiConfigured should support GOOGLE_API_KEY");
+  delete process.env.GOOGLE_API_KEY;
 
   // ---------------------------------------------------------------------------
   // [B] Test: Successful Gemini Responses (Mocked SDK for Quota Protection)
@@ -363,6 +370,9 @@ async function runGeminiIntegrationTests() {
   clearMockGeminiProvider();
   if (originalKey) {
     process.env.GEMINI_API_KEY = originalKey;
+  }
+  if (originalGoogleKey) {
+    process.env.GOOGLE_API_KEY = originalGoogleKey;
   }
 
   console.log("\n=======================================================");

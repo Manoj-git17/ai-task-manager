@@ -34,7 +34,7 @@ function ProductivityDashboard({ tasks = [], onNavigate }) {
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
 
   const API_URL = (
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+    import.meta.env.VITE_API_URL || "/api"
   ).replace(/\/+$/, "");
 
   // Load analytics & goals from backend
