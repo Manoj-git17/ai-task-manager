@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 
 function authenticateToken(req, res, next) {
+  // Pass CORS preflight OPTIONS requests without requiring authentication
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
 
   // Check whether the authorization header exists.

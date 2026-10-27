@@ -42,6 +42,7 @@ import TaskList from "../components/TaskList";
 import TaskFlowSymbol from "../components/TaskFlowSymbol";
 import UserProfileSettings from "../components/UserProfileSettings";
 import AiChatAssistant from "../components/AiChatAssistant";
+import { API_URL } from "../apiConfig";
 
 // Import local atmospheric mountain vector assets
 import heroMountainsDark from "../assets/hero-mountains-dark.svg";
@@ -61,11 +62,6 @@ function createInteractionId(prefix = "interaction") {
 
 function Home({ darkMode, setDarkMode, tasks: propTasks, initialView }) {
   const navigate = useNavigate();
-
-  // API configuration
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   // Normalize task data from backend or props
   const normalizeTask = (task) => {
@@ -420,7 +416,7 @@ function Home({ darkMode, setDarkMode, tasks: propTasks, initialView }) {
     } catch (err) {
       console.error("Fetch user profile error:", err);
     }
-  }, [API_URL, getAuthHeaders]);
+  }, [getAuthHeaders]);
 
   useEffect(() => {
     fetchUserProfile();
@@ -500,7 +496,7 @@ function Home({ darkMode, setDarkMode, tasks: propTasks, initialView }) {
     } finally {
       setLoadingTasks(false);
     }
-  }, [API_URL, navigate]);
+  }, [navigate]);
 
   useEffect(() => {
     if (!Array.isArray(propTasks)) {
@@ -883,7 +879,7 @@ function Home({ darkMode, setDarkMode, tasks: propTasks, initialView }) {
       toast.error(error.message || "Unable to update task.");
       return false;
     }
-  }, [API_URL, getAuthHeaders, handleTaskResponse, tasks]);
+  }, [getAuthHeaders, handleTaskResponse, tasks]);
 
   // Inline AI Subtask Breakdown Trigger
   async function toggleInlineBreakdown(taskItem) {

@@ -9,6 +9,7 @@ import {
   FiShield,
   FiAlertTriangle,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,10 +20,6 @@ function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -58,22 +55,32 @@ function Login() {
           }),
         });
       } catch (networkErr) {
-        // Fallback: If proxy failed or API_URL was unreachable, try direct alternative
-        const fallbackUrl = API_URL.startsWith("http")
-          ? "/api/login"
-          : "http://localhost:5000/api/login";
-        try {
-          response = await fetch(fallbackUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: cleanEmail,
-              password,
-            }),
-          });
-        } catch {
+        // Fallback only during local development if Vite dev proxy or port failed
+        const isLocalhost =
+          typeof window !== "undefined" &&
+          (window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1" ||
+            window.location.hostname === "0.0.0.0");
+
+        if (isLocalhost) {
+          const fallbackUrl = API_URL.startsWith("http")
+            ? "/api/login"
+            : "http://localhost:5000/api/login";
+          try {
+            response = await fetch(fallbackUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: cleanEmail,
+                password,
+              }),
+            });
+          } catch {
+            throw networkErr;
+          }
+        } else {
           throw networkErr;
         }
       }

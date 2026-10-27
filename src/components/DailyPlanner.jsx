@@ -15,6 +15,7 @@ import {
   FiInfo,
   FiX,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function DailyPlanner({
   tasks = [],
@@ -54,10 +55,6 @@ function DailyPlanner({
   const [rescheduleError, setRescheduleError] = useState("");
   const [rescheduleSuccess, setRescheduleSuccess] = useState("");
   const [selectedRescheduleIds, setSelectedRescheduleIds] = useState({});
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   // Detect overdue tasks in current workspace
   const overdueTasksCount = useMemo(() => {

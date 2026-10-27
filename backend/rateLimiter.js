@@ -30,6 +30,11 @@ function createRateLimiter(options = {}) {
   }
 
   const limiterMiddleware = (req, res, next) => {
+    // CORS preflight requests must never be rate limited
+    if (req.method === "OPTIONS") {
+      return next();
+    }
+
     // Determine client IP safely
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||

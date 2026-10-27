@@ -10,6 +10,7 @@ import {
   FiShield,
   FiAlertTriangle,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function Register() {
   const navigate = useNavigate();
@@ -22,10 +23,6 @@ function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -83,22 +80,33 @@ function Register() {
           }),
         });
       } catch (networkErr) {
-        const fallbackUrl = API_URL.startsWith("http")
-          ? "/api/register"
-          : "http://localhost:5000/api/register";
-        try {
-          response = await fetch(fallbackUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: cleanName,
-              email: cleanEmail,
-              password,
-            }),
-          });
-        } catch {
+        // Fallback only during local development if Vite dev proxy or port failed
+        const isLocalhost =
+          typeof window !== "undefined" &&
+          (window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1" ||
+            window.location.hostname === "0.0.0.0");
+
+        if (isLocalhost) {
+          const fallbackUrl = API_URL.startsWith("http")
+            ? "/api/register"
+            : "http://localhost:5000/api/register";
+          try {
+            response = await fetch(fallbackUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: cleanName,
+                email: cleanEmail,
+                password,
+              }),
+            });
+          } catch {
+            throw networkErr;
+          }
+        } else {
           throw networkErr;
         }
       }

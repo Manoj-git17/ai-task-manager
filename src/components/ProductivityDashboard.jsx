@@ -16,6 +16,7 @@ import {
   FiX,
   FiCalendar,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function ProductivityDashboard({ tasks = [], onNavigate }) {
   const [analytics, setAnalytics] = useState(null);
@@ -32,10 +33,6 @@ function ProductivityDashboard({ tasks = [], onNavigate }) {
 
   // Hover state for interactive SVG chart
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   // Load analytics & goals from backend
   const fetchAnalytics = useCallback(async () => {
@@ -75,7 +72,7 @@ function ProductivityDashboard({ tasks = [], onNavigate }) {
       console.error("Failed to load productivity analytics:", err);
       setError("Could not load latest analytics from server.");
     }
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
     let ignore = false;

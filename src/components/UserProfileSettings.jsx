@@ -22,6 +22,7 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { API_URL } from "../apiConfig";
 
 // Curated Gen-Z Gradient Avatar Presets
 const AVATAR_PRESETS = [
@@ -100,10 +101,6 @@ function UserProfileSettings({
   onLogout,
   onNavigate,
 }) {
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
-  ).replace(/\/+$/, "");
-
   const [activeTab, setActiveTab] = useState("general"); // general | security | preferences
   const fileInputRef = useRef(null);
 

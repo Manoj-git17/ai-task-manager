@@ -19,6 +19,7 @@ import {
   FiLayers,
   FiCheckCircle,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function TaskList({
   tasks = [],
@@ -61,10 +62,6 @@ function TaskList({
   // Day-Wise Specific Clear Modal State
   const [dayGroupToClear, setDayGroupToClear] = useState(null);
   const [clearingDayTasks, setClearingDayTasks] = useState(false);
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   const token = localStorage.getItem("token");
 

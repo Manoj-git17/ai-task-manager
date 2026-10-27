@@ -11,6 +11,7 @@ import {
   FiCornerDownLeft,
   FiLayers,
 } from "react-icons/fi";
+import { API_URL } from "../apiConfig";
 
 function AddTask({
   getTasks,
@@ -33,10 +34,6 @@ function AddTask({
   const [aiInput, setAiInput] = useState("");
   const [aiParsing, setAiParsing] = useState(false);
   const [aiFeedback, setAiFeedback] = useState("");
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "/api"
-  ).replace(/\/+$/, "");
 
   const PROMPT_SUGGESTIONS = [
     "Prepare project presentation tomorrow #High",

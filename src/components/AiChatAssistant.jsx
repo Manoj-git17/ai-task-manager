@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import TaskFlowSymbol from "./TaskFlowSymbol";
+import { API_URL } from "../apiConfig";
 
 let globalMsgCounter = 0;
 function createMsgId(prefix = "msg") {
@@ -62,10 +63,6 @@ function AiChatAssistant({
   const [addedTaskKeys, setAddedTaskKeys] = useState(new Set());
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  const API_URL = (
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
-  ).replace(/\/+$/, "");
 
   // Persist conversation
   useEffect(() => {
