@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, ".env") });
-const { app } = require("./server");
+const { app, isOriginAllowed, allowedOrigins } = require("./server");
 
 /**
  * Regression Test Suite: Backend Connectivity & Health Check Diagnostics
@@ -150,6 +150,191 @@ async function runHealthAndConnectivityTests() {
   assert.strictEqual(notFoundRes.body.success, false);
   assert(notFoundRes.body.message.includes("Endpoint not found"));
   console.log("✓ 404 handler returns structured error without hanging");
+
+  // 7. Verify Production Frontend Origin Validation
+  console.log("\n[7] Testing Production Frontend CORS Origin Whitelist...");
+  const prodOrigin = "https://ai-task-manager-frontend-x3og.onrender.com";
+  assert(
+    allowedOrigins.includes(prodOrigin),
+    `allowedOrigins must explicitly include production frontend: ${prodOrigin}`
+  );
+  assert(
+    isOriginAllowed(prodOrigin),
+    "isOriginAllowed must allow the production frontend origin"
+  );
+  assert(
+    isOriginAllowed(`${prodOrigin}/`),
+    "isOriginAllowed must allow production frontend origin with trailing slash"
+  );
+  assert(
+    isOriginAllowed("https://ai-task-manager-frontend-preview.onrender.com"),
+    "isOriginAllowed must allow Render staging/preview deployments"
+  );
+
+  // Test unauthorized origin in simulated production mode
+  const originalEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+  try {
+    assert.strictEqual(
+      isOriginAllowed("https://malicious-attacker-domain.xyz"),
+      false,
+      "Unauthorized origin must be rejected in production mode"
+    );
+  } finally {
+    process.env.NODE_ENV = originalEnv;
+  }
+  console.log("✓ Production frontend origin and security isolation verified");
+
+  // 8. Verify CORS Preflight OPTIONS Request to /api/login
+  console.log("\n[8] Testing CORS Preflight (OPTIONS /api/login) from Production Origin...");
+  const preflightRes = await makeRequest(app, "OPTIONS", "/api/login", {
+    origin: prodOrigin,
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "content-type,authorization",
+  });
+  assert(
+    preflightRes.statusCode === 204 || preflightRes.statusCode === 200,
+    `Preflight must return HTTP 204 or 200 (got ${preflightRes.statusCode})`
+  );
+  assert.strictEqual(
+    preflightRes.headers["access-control-allow-origin"],
+    prodOrigin,
+    `Preflight response must return Access-Control-Allow-Origin: ${prodOrigin}`
+  );
+  assert.strictEqual(
+    preflightRes.headers["access-control-allow-credentials"],
+    "true",
+    "Preflight must include Access-Control-Allow-Credentials: true"
+  );
+  assert(
+    preflightRes.headers["access-control-allow-methods"]?.includes("POST"),
+    "Preflight must allow POST method"
+  );
+  console.log("✓ CORS preflight OPTIONS request answered with correct headers and status 204/200");
+
+  // 9. Verify OPTIONS Preflight Immunity to Rate Limiting
+  console.log("\n[9] Testing OPTIONS Preflight Immunity to Rate Limiting...");
+  for (let i = 0; i < 40; i++) {
+    const rapidPreflight = await makeRequest(app, "OPTIONS", "/api/login", {
+      origin: prodOrigin,
+      "access-control-request-method": "POST",
+    });
+    assert(
+      rapidPreflight.statusCode === 204 || rapidPreflight.statusCode === 200,
+      `Preflight burst request ${i + 1} must not be rate limited (got ${rapidPreflight.statusCode})`
+    );
+    assert.strictEqual(
+      rapidPreflight.headers["access-control-allow-origin"],
+      prodOrigin
+    );
+  }
+  console.log("✓ 40 consecutive preflight OPTIONS requests processed without rate limit rejection");
+
+  // 10. Verify POST /api/login from Production Origin with Credentials
+  console.log("\n[10] Testing POST /api/login from Production Origin (Validation Handling)...");
+  const loginEmptyRes = await makeRequest(
+    app,
+    "POST",
+    "/api/login",
+    {
+      origin: prodOrigin,
+      "content-type": "application/json",
+    },
+    {}
+  );
+  assert.strictEqual(
+    loginEmptyRes.headers["access-control-allow-origin"],
+    prodOrigin,
+    "POST /api/login must return Access-Control-Allow-Origin header"
+  );
+  assert.strictEqual(
+    loginEmptyRes.headers["access-control-allow-credentials"],
+    "true",
+    "POST /api/login must return Access-Control-Allow-Credentials header"
+  );
+  assert.strictEqual(
+    loginEmptyRes.statusCode,
+    400,
+    "Empty login body must return 400 Bad Request"
+  );
+  assert.strictEqual(loginEmptyRes.body.success, false);
+  assert.strictEqual(
+    loginEmptyRes.body.message,
+    "Please enter your email and password."
+  );
+  console.log("✓ POST /api/login received by Express and executed validation with full CORS support");
+
+  // 11. End-to-End Registration & Login via Production Origin with CORS
+  console.log("\n[11] Testing End-to-End Auth Lifecycle from Production Origin...");
+  const uniqueEmail = `probe-test-${Date.now()}@taskflow.dev`;
+  const registerRes = await makeRequest(
+    app,
+    "POST",
+    "/api/register",
+    {
+      origin: prodOrigin,
+      "content-type": "application/json",
+    },
+    {
+      name: "CORS Test User",
+      email: uniqueEmail,
+      password: "TestPassword123!",
+    }
+  );
+
+  assert.strictEqual(registerRes.statusCode, 201, "Registration must succeed with HTTP 201");
+  assert.strictEqual(registerRes.headers["access-control-allow-origin"], prodOrigin);
+  assert.strictEqual(registerRes.headers["access-control-allow-credentials"], "true");
+  assert(registerRes.body.token, "Registration must return JWT token");
+  assert.strictEqual(registerRes.body.user.email, uniqueEmail);
+  assert.strictEqual(registerRes.body.user.password, undefined, "User password must not be returned");
+
+  // Test Login with valid credentials
+  const loginRes = await makeRequest(
+    app,
+    "POST",
+    "/api/login",
+    {
+      origin: prodOrigin,
+      "content-type": "application/json",
+    },
+    {
+      email: uniqueEmail,
+      password: "TestPassword123!",
+    }
+  );
+
+  assert.strictEqual(loginRes.statusCode, 200, "Valid login must return HTTP 200");
+  assert.strictEqual(loginRes.headers["access-control-allow-origin"], prodOrigin);
+  assert.strictEqual(loginRes.headers["access-control-allow-credentials"], "true");
+  assert.strictEqual(loginRes.body.success, true);
+  assert(loginRes.body.token, "Login response must contain JWT token");
+  assert.strictEqual(loginRes.body.user.email, uniqueEmail);
+  assert.strictEqual(loginRes.body.user.password, undefined);
+  console.log("✓ End-to-end registration and login succeed with JWT and CORS headers");
+
+  // 12. Invalid Credentials Response Handling from Production Origin
+  console.log("\n[12] Testing Invalid Credentials Handling with CORS...");
+  const badLoginRes = await makeRequest(
+    app,
+    "POST",
+    "/api/login",
+    {
+      origin: prodOrigin,
+      "content-type": "application/json",
+    },
+    {
+      email: uniqueEmail,
+      password: "WrongPassword999!",
+    }
+  );
+
+  assert.strictEqual(badLoginRes.statusCode, 401, "Invalid password must return HTTP 401");
+  assert.strictEqual(badLoginRes.headers["access-control-allow-origin"], prodOrigin);
+  assert.strictEqual(badLoginRes.headers["access-control-allow-credentials"], "true");
+  assert.strictEqual(badLoginRes.body.success, false);
+  assert.strictEqual(badLoginRes.body.message, "Invalid email or password.");
+  console.log("✓ Invalid credentials safely handled with HTTP 401 and CORS headers");
 
   console.log("\n========================================================");
   console.log("ALL BACKEND CONNECTIVITY & HEALTH REGRESSION TESTS PASSED!");

@@ -38,38 +38,97 @@ const defaultAllowedOrigins = [
   "http://127.0.0.1:5000",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "https://ai-task-manager-frontend-x3og.onrender.com",
 ];
 
 const configuredOrigins = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(",").map((url) => url.trim())
+  ? process.env.FRONTEND_URL.split(",")
+      .map((url) => url.trim().replace(/\/+$/, ""))
+      .filter(Boolean)
   : [];
 
-const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...configuredOrigins])];
+const allowedOrigins = [
+  ...new Set([...defaultAllowedOrigins, ...configuredOrigins]),
+];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      const cleanOrigin = origin.replace(/\/+$/, "");
-      if (
-        allowedOrigins.includes(cleanOrigin) ||
-        allowedOrigins.some((ao) => cleanOrigin.startsWith(ao)) ||
-        process.env.NODE_ENV !== "production"
-      ) {
-        return callback(null, true);
-      }
-      return callback(null, false);
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+function isOriginAllowed(origin) {
+  if (!origin) return true;
+  const cleanOrigin = origin.trim().replace(/\/+$/, "");
+
+  // Match exact allowed origins (case-insensitive for host/protocol)
+  if (
+    allowedOrigins.some(
+      (ao) => ao.trim().replace(/\/+$/, "").toLowerCase() === cleanOrigin.toLowerCase()
+    )
+  ) {
+    return true;
+  }
+
+  // Allow Render deployed frontends matching TaskFlow frontend domain patterns
+  if (
+    /^https:\/\/ai-task-manager-frontend(-[a-z0-9]+)?\.onrender\.com$/i.test(
+      cleanOrigin
+    )
+  ) {
+    return true;
+  }
+
+  // In non-production environments, allow local development origins
+  if (process.env.NODE_ENV !== "production") {
+    return true;
+  }
+
+  return false;
+}
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (isOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+  ],
+  exposedHeaders: [
+    "RateLimit-Limit",
+    "RateLimit-Remaining",
+    "RateLimit-Reset",
+    "Retry-After",
+  ],
+  credentials: true,
+  optionsSuccessStatus: 204,
+  maxAge: 86400, // 24 hours preflight cache
+};
+
+// Enable CORS middleware for all incoming requests
+app.use(cors(corsOptions));
+
+// Explicit preflight OPTIONS handler for all endpoints before limiters or auth
+app.options(/.*/, cors(corsOptions));
 
 // Payload size limit to support lightweight compressed avatar uploads
 app.use(express.json({ limit: "10mb" }));
 
 let db;
+
+// Ensure database connection is initialized for all requests
+app.use(async (req, res, next) => {
+  if (!db) {
+    try {
+      db = await initializeDB();
+    } catch (err) {
+      console.error("Database connection error:", err.message);
+    }
+  }
+  next();
+});
 
 /* -------------------- HEALTH CHECK (Exempt from Rate Limiting) -------------------- */
 
@@ -1046,4 +1105,7 @@ module.exports = {
   app,
   startServer,
   getDb: () => db,
+  isOriginAllowed,
+  corsOptions,
+  allowedOrigins,
 };
