@@ -214,13 +214,11 @@ function normalizeTask(task) {
 }
 
 function getUserId(req) {
-  if (req.userId) return req.userId;
-  const id = Number(req.user?.id);
-  const email = String(req.user?.email || "").toLowerCase();
-  if (email.includes("manoj") || email.includes("60281")) {
-    return 2;
+  if (req.userId !== undefined && req.userId !== null && !Number.isNaN(Number(req.userId))) {
+    return Number(req.userId);
   }
-  return id;
+  const id = Number(req.user?.id);
+  return !Number.isNaN(id) ? id : req.user?.id;
 }
 
 function validTaskText(task) {

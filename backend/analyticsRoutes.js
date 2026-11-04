@@ -13,7 +13,7 @@ const router = express.Router();
  */
 router.get("/analytics", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     const db = req.db || req.app.get("db");
 
     if (!db) {
@@ -60,7 +60,7 @@ router.get("/analytics", authenticateToken, async (req, res) => {
  */
 router.get("/goals", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     const db = req.db || req.app.get("db");
 
     if (!db) {
@@ -101,7 +101,7 @@ router.get("/goals", authenticateToken, async (req, res) => {
  */
 router.post("/goals", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     const db = req.db || req.app.get("db");
 
     if (!db) {
@@ -165,7 +165,7 @@ router.post("/goals", authenticateToken, async (req, res) => {
  */
 router.delete("/goals/:id", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     const db = req.db || req.app.get("db");
 
     if (!db) {

@@ -166,7 +166,7 @@ router.post("/plan", authenticateToken, async (req, res) => {
  */
 router.post("/reschedule", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     let userTasks = [];
 
     if (req.db) {
@@ -215,7 +215,7 @@ router.post("/reschedule", authenticateToken, async (req, res) => {
  */
 router.post("/reschedule/apply", authenticateToken, async (req, res) => {
   try {
-    const userId = req.userId || (String(req.user?.email || "").toLowerCase().includes("manoj") ? 2 : Number(req.user?.id));
+    const userId = req.userId || Number(req.user?.id);
     const { updates } = req.body;
 
     if (!Array.isArray(updates) || updates.length === 0) {

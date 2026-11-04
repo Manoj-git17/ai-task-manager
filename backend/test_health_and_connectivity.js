@@ -336,6 +336,67 @@ async function runHealthAndConnectivityTests() {
   assert.strictEqual(badLoginRes.body.message, "Invalid email or password.");
   console.log("✓ Invalid credentials safely handled with HTTP 401 and CORS headers");
 
+  // 13. Authenticated Profile Retrieval (GET /api/me)
+  console.log("\n[13] Testing GET /api/me with Authenticated User Token...");
+  const meRes = await makeRequest(
+    app,
+    "GET",
+    "/api/me",
+    {
+      origin: prodOrigin,
+      authorization: `Bearer ${loginRes.body.token}`,
+    }
+  );
+  assert.strictEqual(meRes.statusCode, 200, "GET /api/me must return HTTP 200 for authenticated user");
+  assert.strictEqual(meRes.body.success, true);
+  assert.strictEqual(meRes.body.user.email, uniqueEmail);
+  console.log("✓ GET /api/me returned authenticated profile successfully (no 404)");
+
+  // 14. Authenticated Task Creation (POST /api/tasks)
+  console.log("\n[14] Testing Task Creation (POST /api/tasks)...");
+  const taskRes = await makeRequest(
+    app,
+    "POST",
+    "/api/tasks",
+    {
+      origin: prodOrigin,
+      authorization: `Bearer ${loginRes.body.token}`,
+      "content-type": "application/json",
+    },
+    {
+      task: "Complete AI project deployment",
+      priority: "High",
+      dueDate: "2026-10-30",
+    }
+  );
+  assert.strictEqual(taskRes.statusCode, 201, "POST /api/tasks must return HTTP 201");
+  assert.strictEqual(taskRes.body.success, true);
+  assert.strictEqual(taskRes.body.task.task, "Complete AI project deployment");
+  console.log("✓ POST /api/tasks created task successfully (no foreign key constraint 500 error)");
+
+  // 15. Authenticated Bulk Task Creation (POST /api/tasks/bulk)
+  console.log("\n[15] Testing Bulk Task Creation (POST /api/tasks/bulk)...");
+  const bulkRes = await makeRequest(
+    app,
+    "POST",
+    "/api/tasks/bulk",
+    {
+      origin: prodOrigin,
+      authorization: `Bearer ${loginRes.body.token}`,
+      "content-type": "application/json",
+    },
+    {
+      tasks: [
+        { task: "Subtask 1: Setup database", priority: "High" },
+        { task: "Subtask 2: Test endpoints", priority: "Medium" },
+      ],
+    }
+  );
+  assert.strictEqual(bulkRes.statusCode, 201, "POST /api/tasks/bulk must return HTTP 201");
+  assert.strictEqual(bulkRes.body.success, true);
+  assert.strictEqual(bulkRes.body.tasks.length, 2);
+  console.log("✓ POST /api/tasks/bulk created tasks in bulk successfully (no foreign key constraint 500 error)");
+
   console.log("\n========================================================");
   console.log("ALL BACKEND CONNECTIVITY & HEALTH REGRESSION TESTS PASSED!");
   console.log("========================================================\n");

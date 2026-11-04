@@ -66,8 +66,19 @@ authenticateToken(reqValid, resValid, () => {
 
 assert.strictEqual(nextCalled, true, "next() must be called on valid token");
 assert.strictEqual(reqValid.user.id, 2);
+assert.strictEqual(reqValid.userId, 2);
 assert.strictEqual(reqValid.user.email, "manojmanoj60281@gmail.com");
-console.log("✓ authMiddleware successfully validates authentic JWT token and assigns req.user");
+
+// Verify authentic ID 1 (production user) is strictly preserved and not overridden
+const user1Token = jwt.sign(
+  { id: 1, email: "manojmanoj60281@gmail.com", name: "Manoj" },
+  process.env.JWT_SECRET,
+  { expiresIn: "7d" }
+);
+const reqUser1 = { headers: { authorization: `Bearer ${user1Token}` } };
+authenticateToken(reqUser1, resValid, () => {});
+assert.strictEqual(reqUser1.userId, 1, "userId must match authentic token ID 1");
+console.log("✓ authMiddleware successfully validates authentic JWT token and assigns req.user and req.userId");
 
 // 5. Test breakdownTaskIntoSubtasks
 const breakdown = breakdownTaskIntoSubtasks("Prepare project presentation", "High", "2026-10-26", refDate);

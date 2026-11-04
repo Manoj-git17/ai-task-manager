@@ -35,8 +35,7 @@ function authenticateToken(req, res, next) {
     // Make the authenticated user's information available to routes.
     req.user = decoded;
     const id = Number(decoded.id);
-    const email = String(decoded.email || "").toLowerCase();
-    req.userId = email.includes("manoj") || email.includes("60281") ? 2 : id;
+    req.userId = Number.isFinite(id) ? id : decoded.id;
 
     return next();
   } catch (error) {
