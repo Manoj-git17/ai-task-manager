@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -18,6 +18,7 @@ import {
   ModernToastIcon,
   ModernCloseButton,
 } from "./components/ModernToastComponents";
+import { warmupBackend } from "./apiConfig";
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -29,6 +30,15 @@ function App() {
   });
 
   const location = useLocation();
+
+  // Keep backend warm and responsive to eliminate Render cold start delays
+  useEffect(() => {
+    warmupBackend();
+    const interval = setInterval(() => {
+      warmupBackend();
+    }, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   function handleDarkModeChange(value) {
     setDarkMode(value);

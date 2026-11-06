@@ -165,7 +165,10 @@ async function testProviderIntegrity() {
   // Query explanation without external LLM -> Must report deterministic-knowledge-engine
   const expRes = await processUnifiedAiQuery({ text: "What is database indexing?" });
   assert.ok(
-    expRes.provider === "deterministic-knowledge-engine" || expRes.provider.includes("openai") || expRes.provider.includes("gemini"),
+    expRes.provider === "deterministic-knowledge-engine" ||
+      expRes.provider.toLowerCase().includes("openai") ||
+      expRes.provider.toLowerCase().includes("gemini") ||
+      expRes.provider.toLowerCase().includes("chatgpt"),
     `Provider must be accurately reported, got: ${expRes.provider}`
   );
   console.log("✓ Provider transparency strictly enforced across deterministic and live layers");

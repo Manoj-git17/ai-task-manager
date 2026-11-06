@@ -221,6 +221,32 @@ function getUserId(req) {
   return !Number.isNaN(id) ? id : req.user?.id;
 }
 
+async function resolveUserId(req) {
+  let userId = getUserId(req);
+  if (!db) return userId;
+
+  // 1. Check if user exists by decoded ID
+  if (userId) {
+    const user = await db.get("SELECT id FROM users WHERE id = ?", userId);
+    if (user) {
+      return user.id;
+    }
+  }
+
+  // 2. Fallback: If not found by ID (e.g. token issued before container restart), resolve by authenticated email
+  const email = normalizeEmail(req.user?.email);
+  if (email) {
+    const userByEmail = await db.get("SELECT id FROM users WHERE email = ?", email);
+    if (userByEmail) {
+      req.userId = userByEmail.id;
+      if (req.user) req.user.id = userByEmail.id;
+      return userByEmail.id;
+    }
+  }
+
+  return null;
+}
+
 function validTaskText(task) {
   return (
     typeof task === "string" &&
@@ -337,7 +363,7 @@ app.post("/api/register", async (req, res) => {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await db.run(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
@@ -416,15 +442,73 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// Delete account endpoint
+app.delete("/api/user/account", authenticateToken, async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return sendError(res, 401, "Account not found.");
+    }
+
+    await db.run("DELETE FROM tasks WHERE userId = ?", userId);
+    await db.run("DELETE FROM goals WHERE userId = ?", userId);
+    await db.run("DELETE FROM users WHERE id = ?", userId);
+
+    return res.json({
+      success: true,
+      message: "Account and associated data deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Delete account error:", error.message);
+    return sendError(res, 500, "Unable to delete account.");
+  }
+});
+
+// Reset password endpoint
+app.post("/api/reset-password", async (req, res) => {
+  try {
+    const email = normalizeEmail(req.body.email);
+    const newPassword = req.body.password;
+
+    if (!email || !newPassword || typeof newPassword !== "string" || newPassword.length < 8) {
+      return sendError(res, 400, "Please provide email and a password of at least 8 characters.");
+    }
+
+    const user = await db.get("SELECT id, name, email FROM users WHERE email = ?", email);
+    if (!user) {
+      return sendError(res, 404, "No account found with this email. Please register.");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.run("UPDATE users SET password = ? WHERE id = ?", hashedPassword, user.id);
+
+    const token = signToken(user);
+    return res.json({
+      success: true,
+      message: "Password reset successful. You are now logged in.",
+      token,
+      user: publicUser(user),
+    });
+  } catch (error) {
+    console.error("Reset password error:", error.message);
+    return sendError(res, 500, "Unable to reset password.");
+  }
+});
+
 app.get("/api/me", authenticateToken, async (req, res) => {
   try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return sendError(res, 401, "Account not found in database. Please log in or register again.");
+    }
+
     const user = await db.get(
       "SELECT id, name, email, avatar, createdAt FROM users WHERE id = ?",
-      getUserId(req)
+      userId
     );
 
     if (!user) {
-      return sendError(res, 404, "Account not found. Please register again.");
+      return sendError(res, 401, "Account not found in database. Please log in or register again.");
     }
 
     return res.json({
@@ -545,7 +629,7 @@ app.put("/api/user/password", authenticateToken, async (req, res) => {
       return sendError(res, 400, "Incorrect current password. Please try again.");
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     await db.run("UPDATE users SET password = ? WHERE id = ?", hashedNewPassword, userId);
 
     return res.json({
@@ -584,12 +668,17 @@ app.delete("/api/user/avatar", authenticateToken, async (req, res) => {
 
 app.get("/api/tasks", authenticateToken, async (req, res) => {
   try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return sendError(res, 401, "Account not found. Please log in or register again.");
+    }
+
     const tasks = await db.all(
       `SELECT id, task, completed, favorite, priority, dueDate, createdAt, completedAt, COALESCE(workspace, 'Engineering Core') as workspace
        FROM tasks
        WHERE userId = ?
        ORDER BY id DESC`,
-      getUserId(req)
+      userId
     );
 
     return res.json({
@@ -606,6 +695,11 @@ app.get("/api/tasks", authenticateToken, async (req, res) => {
 
 app.post("/api/tasks", authenticateToken, async (req, res) => {
   try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return sendError(res, 401, "Account not found or session invalid. Please log in again.");
+    }
+
     const { task, priority, dueDate, workspace } = req.body;
 
     if (!validTaskText(task)) {
@@ -638,7 +732,7 @@ app.post("/api/tasks", authenticateToken, async (req, res) => {
       priority || "Medium",
       dueDate || null,
       createdAt,
-      getUserId(req),
+      userId,
       taskWorkspace
     );
 
@@ -647,7 +741,7 @@ app.post("/api/tasks", authenticateToken, async (req, res) => {
        FROM tasks
        WHERE id = ? AND userId = ?`,
       result.lastID,
-      getUserId(req)
+      userId
     );
 
     return res.status(201).json({
@@ -657,6 +751,9 @@ app.post("/api/tasks", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error("Create task error:", error.message);
+    if (error.message && error.message.includes("FOREIGN KEY")) {
+      return sendError(res, 401, "Account session invalid. Please log in again.");
+    }
     return sendError(res, 500, "Unable to create your task.");
   }
 });
@@ -665,6 +762,11 @@ app.post("/api/tasks", authenticateToken, async (req, res) => {
 
 app.post("/api/tasks/bulk", authenticateToken, async (req, res) => {
   try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return sendError(res, 401, "Account not found or session invalid. Please log in again.");
+    }
+
     const { tasks: itemsToAdd, workspace: defaultWorkspace } = req.body;
 
     if (!Array.isArray(itemsToAdd) || itemsToAdd.length === 0) {
@@ -675,7 +777,7 @@ app.post("/api/tasks/bulk", authenticateToken, async (req, res) => {
       );
     }
 
-    const userId = getUserId(req);
+    
     const createdAt = new Date().toISOString();
     const createdTasks = [];
 

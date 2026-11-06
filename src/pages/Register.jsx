@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiUser,
@@ -10,7 +10,7 @@ import {
   FiShield,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { API_URL } from "../apiConfig";
+import { API_URL, warmupBackend } from "../apiConfig";
 
 function Register() {
   const navigate = useNavigate();
@@ -23,6 +23,18 @@ function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingStatusText, setLoadingStatusText] = useState("Creating account...");
+  const abortControllerRef = useRef(null);
+
+  // Pre-warm backend immediately when Register page mounts
+  useEffect(() => {
+    warmupBackend();
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -65,6 +77,19 @@ function Register() {
     try {
       setLoading(true);
       setError("");
+      setLoadingStatusText("Creating account...");
+
+      const timer1 = setTimeout(() => {
+        setLoadingStatusText("Connecting to cloud server...");
+      }, 2000);
+
+      const timer2 = setTimeout(() => {
+        setLoadingStatusText("Waking cloud instance (Render free tier boot)...");
+      }, 6000);
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
 
       let response;
       try {
@@ -78,6 +103,7 @@ function Register() {
             email: cleanEmail,
             password,
           }),
+          signal: controller.signal,
         });
       } catch (networkErr) {
         // Fallback only during local development if Vite dev proxy or port failed
@@ -102,6 +128,7 @@ function Register() {
                 email: cleanEmail,
                 password,
               }),
+              signal: controller.signal,
             });
           } catch {
             throw networkErr;
@@ -110,6 +137,10 @@ function Register() {
           throw networkErr;
         }
       }
+
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timeoutId);
 
       const data = await response.json().catch(() => ({}));
 
@@ -368,7 +399,7 @@ function Register() {
             {loading ? (
               <>
                 <span className="login-spinner" aria-hidden="true" />
-                <span>Creating account...</span>
+                <span>{loadingStatusText}</span>
               </>
             ) : (
               <>

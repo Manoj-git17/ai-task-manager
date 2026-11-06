@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FiLock,
@@ -9,7 +9,7 @@ import {
   FiShield,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { API_URL } from "../apiConfig";
+import { API_URL, warmupBackend } from "../apiConfig";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,7 +19,31 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingStatusText, setLoadingStatusText] = useState("Signing in...");
   const [showPassword, setShowPassword] = useState(false);
+  const [serverStatus, setServerStatus] = useState("checking"); // "checking" | "online" | "waking"
+  const abortControllerRef = useRef(null);
+
+  // Pre-warm the backend immediately when Login page mounts
+  useEffect(() => {
+    let isMounted = true;
+    warmupBackend()
+      .then((data) => {
+        if (isMounted) {
+          setServerStatus(data && data.success ? "online" : "waking");
+        }
+      })
+      .catch(() => {
+        if (isMounted) setServerStatus("waking");
+      });
+
+    return () => {
+      isMounted = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -41,6 +65,26 @@ function Login() {
     try {
       setLoading(true);
       setError("");
+      setLoadingStatusText("Authenticating credentials...");
+
+      // Dynamic feedback timers for cloud instance cold start transparency
+      const timer1 = setTimeout(() => {
+        setLoadingStatusText("Connecting to cloud server...");
+      }, 2000);
+
+      const timer2 = setTimeout(() => {
+        setLoadingStatusText("Waking up cloud instance (Render free tier)...");
+        setServerStatus("waking");
+      }, 6000);
+
+      const timer3 = setTimeout(() => {
+        setLoadingStatusText("Almost ready, finalizing secure workspace...");
+      }, 16000);
+
+      // 60-second AbortController timeout to prevent permanent hanging
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
 
       let response;
       try {
@@ -53,6 +97,7 @@ function Login() {
             email: cleanEmail,
             password,
           }),
+          signal: controller.signal,
         });
       } catch (networkErr) {
         // Fallback only during local development if Vite dev proxy or port failed
@@ -76,6 +121,7 @@ function Login() {
                 email: cleanEmail,
                 password,
               }),
+              signal: controller.signal,
             });
           } catch {
             throw networkErr;
@@ -83,15 +129,20 @@ function Login() {
         } else {
           throw networkErr;
         }
+      } finally {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+        clearTimeout(timeoutId);
       }
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         if (response.status === 401) {
-          setError("Incorrect email or password. Please try again.");
+          setError("Incorrect email or password. Please check your credentials or register.");
         } else if (response.status === 429) {
-          setError("Too many attempts. Please try again later.");
+          setError("Too many attempts. Please wait a few moments before trying again.");
         } else if (response.status >= 500) {
           setError(
             data.message ||
@@ -109,20 +160,27 @@ function Login() {
         return;
       }
 
+      setServerStatus("online");
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       const destination = location.state?.from?.pathname || "/";
-
       navigate(destination, { replace: true });
     } catch (err) {
       console.error("Login error:", err);
 
-      setError(
-        "Unable to connect to the server. Please check your connection and try again."
-      );
+      if (err.name === "AbortError") {
+        setError(
+          "Connection timed out while waking up cloud server. The server is now starting up — please click Sign In again."
+        );
+      } else {
+        setError(
+          "Unable to connect to the server. If the cloud server was sleeping, please wait a moment and try again."
+        );
+      }
     } finally {
       setLoading(false);
+      setLoadingStatusText("Signing in...");
     }
   }
 
@@ -137,8 +195,24 @@ function Login() {
         <div className="login-header">
           {/* Status Badge */}
           <div className="auth-chip" aria-hidden="true">
-            <span className="auth-chip-dot" />
-            <span>TaskFlow Intelligence</span>
+            <span
+              className="auth-chip-dot"
+              style={{
+                backgroundColor:
+                  serverStatus === "online"
+                    ? "#10B981"
+                    : serverStatus === "waking"
+                    ? "#F59E0B"
+                    : "#6366F1",
+              }}
+            />
+            <span>
+              {serverStatus === "online"
+                ? "Cloud Server Ready"
+                : serverStatus === "waking"
+                ? "Connecting Server..."
+                : "TaskFlow Intelligence"}
+            </span>
           </div>
 
           <div className="login-brand-icon" aria-hidden="true">
@@ -263,7 +337,7 @@ function Login() {
             {loading ? (
               <>
                 <span className="login-spinner" aria-hidden="true" />
-                <span>Signing in...</span>
+                <span>{loadingStatusText}</span>
               </>
             ) : (
               <>

@@ -1,5 +1,5 @@
 /**
- * TaskFlow API Base URL Configuration
+ * TaskFlow API Base URL Configuration & Connection Pre-Warmer
  *
  * Provides a single source of truth for the backend API base URL across the application.
  *
@@ -45,4 +45,43 @@ export function getApiBaseUrl() {
 }
 
 export const API_URL = getApiBaseUrl();
+
+let warmupInFlight = null;
+
+/**
+ * Pre-warms the backend API to eliminate Render free-tier cold start delays.
+ * Fires a lightweight health check in the background as soon as the client bundle loads.
+ */
+export function warmupBackend() {
+  if (typeof window === "undefined") return Promise.resolve(null);
+  if (warmupInFlight) return warmupInFlight;
+
+  const healthUrl = `${API_URL}/health`;
+  warmupInFlight = fetch(healthUrl, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  })
+    .then((res) => (res.ok ? res.json() : null))
+    .catch((err) => {
+      // Non-blocking warmup warning
+      console.warn("Backend warmup background ping:", err.message);
+      return null;
+    })
+    .finally(() => {
+      // Clear in-flight promise after 30 seconds so subsequent keep-alives can ping
+      setTimeout(() => {
+        warmupInFlight = null;
+      }, 30000);
+    });
+
+  return warmupInFlight;
+}
+
+// Automatically trigger background warmup when module loads in browser
+if (typeof window !== "undefined") {
+  setTimeout(() => {
+    warmupBackend();
+  }, 100);
+}
+
 export default API_URL;
