@@ -410,10 +410,15 @@ app.post("/api/login", async (req, res) => {
       return sendError(res, 400, "Please enter your email and password.");
     }
 
+    console.log("[Auth Login Audit] Attempt for email:", email);
+
     const user = await db.get(
       "SELECT id, name, email, password FROM users WHERE email = ?",
       email
     );
+
+    const userFound = Boolean(user);
+    console.log("[Auth Login Audit] User lookup result: found =", userFound);
 
     if (!user) {
       return sendError(res, 401, "Invalid email or password.");
@@ -423,6 +428,8 @@ app.post("/api/login", async (req, res) => {
       password,
       user.password
     );
+
+    console.log("[Auth Login Audit] Password match result: match =", passwordMatches);
 
     if (!passwordMatches) {
       return sendError(res, 401, "Invalid email or password.");
